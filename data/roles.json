@@ -1,0 +1,180 @@
+{
+  "genericRoles": [
+    {
+      "id": "junior",
+      "name": "Junior Developer",
+      "level": 1,
+      "yearsExperience": "0-2 years",
+      "expectations": {
+        "technicalDepth": "foundational",
+        "independence": "guided",
+        "complexity": "simple"
+      },
+      "description": "Entry-level position focusing on fundamentals, learning ability, and enthusiasm",
+      "evaluationCriteria": [
+        "Understanding of basic concepts",
+        "Ability to learn and ask good questions",
+        "Basic problem-solving skills",
+        "Enthusiasm and growth mindset"
+      ]
+    },
+    {
+      "id": "mid",
+      "name": "Mid-Level Developer",
+      "level": 2,
+      "yearsExperience": "2-5 years",
+      "expectations": {
+        "technicalDepth": "solid",
+        "independence": "semi-independent",
+        "complexity": "moderate"
+      },
+      "description": "Experienced position with solid skills, some independence, and growing technical depth",
+      "evaluationCriteria": [
+        "Solid understanding of core concepts",
+        "Can work independently on most tasks",
+        "Good problem-solving and debugging skills",
+        "Beginning to mentor juniors"
+      ]
+    },
+    {
+      "id": "senior",
+      "name": "Senior Developer",
+      "level": 3,
+      "yearsExperience": "5-8 years",
+      "expectations": {
+        "technicalDepth": "deep",
+        "independence": "fully-independent",
+        "complexity": "complex"
+      },
+      "description": "Advanced position requiring deep expertise, mentoring ability, and architectural thinking",
+      "evaluationCriteria": [
+        "Deep technical expertise in domain",
+        "Can design and architect solutions",
+        "Mentors and guides team members",
+        "Handles complex, ambiguous problems"
+      ]
+    },
+    {
+      "id": "lead",
+      "name": "Tech Lead",
+      "level": 4,
+      "yearsExperience": "8+ years",
+      "expectations": {
+        "technicalDepth": "expert",
+        "independence": "leads-others",
+        "complexity": "highly-complex"
+      },
+      "description": "Leadership position requiring technical leadership, strategy, and team influence",
+      "evaluationCriteria": [
+        "Expert-level technical knowledge",
+        "Sets technical direction and standards",
+        "Leads technical decisions and trade-offs",
+        "Influences across teams and stakeholders"
+      ]
+    }
+  ],
+  "courseRoles": {
+    "fullstack-web-dev": [
+      {
+        "id": "frontend-dev",
+        "name": "Frontend Developer",
+        "baseLevel": "mid",
+        "focusTopics": ["html-css", "javascript", "react"],
+        "description": "Specializes in building user interfaces and client-side applications",
+        "keySkills": ["HTML/CSS", "JavaScript", "React", "Responsive Design", "Browser APIs"]
+      },
+      {
+        "id": "backend-dev",
+        "name": "Backend Developer",
+        "baseLevel": "mid",
+        "focusTopics": ["nodejs", "databases"],
+        "description": "Specializes in server-side logic, APIs, and database design",
+        "keySkills": ["Node.js", "Express", "REST APIs", "Database Design", "Authentication"]
+      },
+      {
+        "id": "fullstack-dev",
+        "name": "Full Stack Developer",
+        "baseLevel": "mid",
+        "focusTopics": ["html-css", "javascript", "react", "nodejs", "databases"],
+        "description": "Works across the entire stack from frontend to backend",
+        "keySkills": ["Frontend", "Backend", "Databases", "APIs", "DevOps Basics"]
+      },
+      {
+        "id": "devops-engineer",
+        "name": "DevOps Engineer",
+        "baseLevel": "mid",
+        "focusTopics": ["git", "nodejs"],
+        "description": "Focuses on deployment, CI/CD, and infrastructure",
+        "keySkills": ["Git", "CI/CD", "Docker", "Cloud Platforms", "Automation"]
+      }
+    ],
+    "digital-marketing": [
+      {
+        "id": "seo-specialist",
+        "name": "SEO Specialist",
+        "baseLevel": "mid",
+        "focusTopics": ["seo", "analytics"],
+        "description": "Specializes in search engine optimization and organic traffic",
+        "keySkills": ["On-Page SEO", "Technical SEO", "Keyword Research", "Link Building", "Analytics"]
+      },
+      {
+        "id": "social-media-manager",
+        "name": "Social Media Manager",
+        "baseLevel": "mid",
+        "focusTopics": ["social-media", "content-marketing"],
+        "description": "Manages social media presence and community engagement",
+        "keySkills": ["Platform Strategy", "Content Creation", "Community Management", "Influencer Relations"]
+      },
+      {
+        "id": "ppc-specialist",
+        "name": "PPC Specialist",
+        "baseLevel": "mid",
+        "focusTopics": ["ppc", "analytics"],
+        "description": "Manages paid advertising campaigns across platforms",
+        "keySkills": ["Google Ads", "Facebook Ads", "Budget Management", "A/B Testing", "Conversion Optimization"]
+      },
+      {
+        "id": "digital-marketing-manager",
+        "name": "Digital Marketing Manager",
+        "baseLevel": "senior",
+        "focusTopics": ["seo", "social-media", "ppc", "content-marketing", "analytics"],
+        "description": "Oversees all digital marketing activities and strategy",
+        "keySkills": ["Strategy", "Team Leadership", "Budget Planning", "Cross-Channel Marketing", "Stakeholder Management"]
+      }
+    ],
+    "python-programming": [
+      {
+        "id": "python-developer",
+        "name": "Python Developer",
+        "baseLevel": "mid",
+        "focusTopics": ["python-basics", "python-oop", "python-data"],
+        "description": "General Python development for various applications",
+        "keySkills": ["Core Python", "OOP", "Data Structures", "Testing", "Clean Code"]
+      },
+      {
+        "id": "data-analyst",
+        "name": "Data Analyst",
+        "baseLevel": "mid",
+        "focusTopics": ["python-basics", "python-data", "python-libs"],
+        "description": "Uses Python for data analysis and visualization",
+        "keySkills": ["Pandas", "NumPy", "Data Manipulation", "Visualization", "SQL"]
+      },
+      {
+        "id": "automation-engineer",
+        "name": "Automation Engineer",
+        "baseLevel": "mid",
+        "focusTopics": ["python-basics", "python-oop", "python-libs"],
+        "description": "Builds automation scripts and tools",
+        "keySkills": ["Scripting", "Web Scraping", "API Integration", "Testing Automation", "Process Automation"]
+      },
+      {
+        "id": "backend-python-dev",
+        "name": "Python Backend Developer",
+        "baseLevel": "mid",
+        "focusTopics": ["python-basics", "python-oop", "python-libs"],
+        "description": "Builds backend services and APIs using Python",
+        "keySkills": ["Flask/Django", "REST APIs", "Database Integration", "Authentication", "Deployment"]
+      }
+    ]
+  }
+}

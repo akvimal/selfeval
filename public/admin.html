@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - SelfEval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">SelfEval</a>
+      <div class="navbar-nav ms-auto" id="nav-items">
+        <!-- Dynamically populated by updateNavbar() -->
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Admin Dashboard</h1>
+      <div id="stats-badge" class="text-muted"></div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-panel" type="button" role="tab">
+          Users
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance-panel" type="button" role="tab">
+          Course Performance
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings-panel" type="button" role="tab">
+          Settings
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Users Tab -->
+      <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">All Users</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table">
+                  <tr>
+                    <td colspan="6" class="text-center py-4">Loading users...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Performance Tab -->
+      <div class="tab-pane fade" id="performance-panel" role="tabpanel">
+        <div id="course-performance-container">
+          <p class="text-center py-4">Loading course performance...</p>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div class="tab-pane fade" id="settings-panel" role="tabpanel">
+        <div class="row">
+          <div class="col-lg-8">
+            <!-- Email Verification Settings -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">Email Verification</h5>
+              </div>
+              <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="require-email-verification" style="transform: scale(1.3);">
+                  <label class="form-check-label ms-2" for="require-email-verification">
+                    <strong>Require email verification for new signups</strong>
+                  </label>
+                </div>
+                <p class="text-muted small mb-3">
+                  When enabled, new users must verify their email address before they can sign in.
+                  A verification link will be sent to their email after registration.
+                </p>
+                <button class="btn btn-primary btn-sm" id="save-email-settings-btn">Save Email Settings</button>
+                <span id="email-settings-status" class="ms-2"></span>
+
+                <hr class="my-4">
+
+                <h6>SMTP Configuration</h6>
+                <p class="text-muted small">Configure SMTP settings in your <code>.env</code> file:</p>
+                <pre class="bg-light p-3 rounded small"><code>SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-email@example.com
+SMTP_PASS=your-password
+SMTP_FROM=noreply@example.com
+APP_URL=http://localhost:3000</code></pre>
+                <p class="text-muted small">Without SMTP configuration, verification emails will be logged to the server console.</p>
+              </div>
+            </div>
+
+            <!-- Interview Requirements Settings -->
+            <div class="card mb-4">
+              <div class="card-header">
+                <h5 class="mb-0">Interview Settings</h5>
+              </div>
+              <div class="card-body">
+                <h6>Access Requirements</h6>
+                <p class="text-muted small mb-3">
+                  Set minimum requirements learners must meet before they can access the Interview feature.
+                  Set to 0 to disable the requirement.
+                </p>
+
+                <div class="row g-3 mb-4">
+                  <div class="col-md-6">
+                    <label for="interview-min-questions" class="form-label">Minimum Practice Questions (Per Topic)</label>
+                    <input type="number" class="form-control" id="interview-min-questions" min="0" max="100" value="0">
+                    <div class="form-text">Learners must answer at least this many questions <strong>in each topic</strong> before accessing interviews</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="interview-min-score" class="form-label">Minimum Average Score (%)</label>
+                    <input type="number" class="form-control" id="interview-min-score" min="0" max="100" value="0">
+                    <div class="form-text">Learners must achieve at least this average score in practice</div>
+                  </div>
+                </div>
+
+                <hr class="my-3">
+
+                <h6>Interview Limits</h6>
+                <p class="text-muted small mb-3">
+                  Control interview session behavior and usage limits.
+                </p>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="interview-daily-limit" class="form-label">Daily Question Limit</label>
+                    <input type="number" class="form-control" id="interview-daily-limit" min="1" max="500" value="50">
+                    <div class="form-text">Maximum interview questions a learner can answer per day</div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="alert alert-info small mb-0 mt-4">
+                      <strong>Auto-end on skips:</strong> Interview sessions automatically end if a learner skips 3 questions.
+                    </div>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-sm" id="save-interview-settings-btn">Save Interview Settings</button>
+                <span id="interview-settings-status" class="ms-2"></span>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">AI Model Configuration</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-4">
+                  <div class="d-flex align-items-center mb-3">
+                    <span class="me-2">Current Model:</span>
+                    <span class="badge bg-primary fs-6" id="current-model-badge">Loading...</span>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fw-bold">Select AI Model</label>
+                  <p class="text-muted small mb-3">Choose the AI model to use for generating questions and evaluating answers.</p>
+
+                  <div id="model-options">
+                    <p class="text-muted">Loading available models...</p>
+                  </div>
+                </div>
+
+                <div class="alert alert-info">
+                  <strong>Note:</strong> Different models have different capabilities and costs.
+                  <ul class="mb-0 mt-2">
+                    <li><strong>Groq models</strong> - Fast and free, good for most use cases</li>
+                    <li><strong>Claude Haiku</strong> - Fast, affordable, good balance of speed and quality</li>
+                    <li><strong>Claude Sonnet</strong> - Higher quality responses, moderate cost</li>
+                    <li><strong>Claude Opus</strong> - Highest quality, best for complex evaluations</li>
+                  </ul>
+                </div>
+
+                <button class="btn btn-primary" id="save-settings-btn" disabled>
+                  Save Settings
+                </button>
+                <span id="settings-save-status" class="ms-3"></span>
+              </div>
+            </div>
+
+            <div class="card mt-4">
+              <div class="card-header">
+                <h5 class="mb-0">API Keys</h5>
+              </div>
+              <div class="card-body">
+                <p class="text-muted">API keys are configured via environment variables in the <code>.env</code> file.</p>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Provider</th>
+                        <th>Environment Variable</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="api-keys-status">
+                      <tr>
+                        <td>Groq</td>
+                        <td><code>GROQ_API_KEY</code></td>
+                        <td><span class="badge bg-secondary">Checking...</span></td>
+                      </tr>
+                      <tr>
+                        <td>Anthropic (Claude)</td>
+                        <td><code>ANTHROPIC_API_KEY</code></td>
+                        <td><span class="badge bg-secondary">Checking...</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit User Modal -->
+  <div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="edit-user-form">
+            <input type="hidden" id="edit-user-id">
+            <div class="mb-3">
+              <label for="edit-name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="edit-name" required>
+            </div>
+            <div class="mb-3">
+              <label for="edit-email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="edit-email" required>
+            </div>
+            <div class="mb-3">
+              <label for="edit-role" class="form-label">Role</label>
+              <select class="form-select" id="edit-role">
+                <option value="learner">Learner</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="edit-enabled">
+                <label class="form-check-label" for="edit-enabled">Account Enabled</label>
+              </div>
+              <small class="text-muted">Disabled users cannot sign in</small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="save-user-btn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Performance Modal -->
+  <div class="modal fade" id="viewPerformanceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">User Performance</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="performance-content">
+          Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Learner Q&A History Modal -->
+  <div class="modal fade" id="learnerHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="learnerHistoryTitle">Learner Q&A History</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="learner-history-content" style="max-height: 70vh; overflow-y: auto;">
+          Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    let currentUser = null;
+    let users = [];
+
+    let settingsData = null;
+    let selectedModel = null;
+
+    async function init() {
+      await updateNavbar();
+      currentUser = await requireAuth();
+      if (!currentUser) return;
+
+      if (currentUser.role !== 'admin') {
+        alert('Admin access required');
+        window.location.href = '/';
+        return;
+      }
+
+      await loadUsers();
+      await loadStats();
+      await loadCoursePerformance();
+      await loadSettings();
+      setupEventListeners();
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/admin/users');
+        if (!res.ok) throw new Error('Failed to load users');
+        users = await res.json();
+        renderUsers();
+      } catch (error) {
+        console.error('Error loading users:', error);
+        document.getElementById('users-table').innerHTML =
+          '<tr><td colspan="5" class="text-center text-danger">Failed to load users</td></tr>';
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        if (res.ok) {
+          const stats = await res.json();
+          document.getElementById('stats-badge').innerHTML =
+            `<span class="badge bg-primary me-2">${stats.totalUsers} users</span>
+             <span class="badge bg-info me-2">${stats.admins} admins</span>
+             <span class="badge bg-secondary">${stats.learners} learners</span>`;
+        }
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    async function loadCoursePerformance() {
+      const container = document.getElementById('course-performance-container');
+      try {
+        const res = await fetch('/api/admin/course-performance');
+        if (!res.ok) throw new Error('Failed to load course performance');
+        const courses = await res.json();
+
+        if (courses.length === 0) {
+          container.innerHTML = `
+            <div class="alert alert-info">
+              No learner activity yet. Performance data will appear here once learners start practicing.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = courses.map(course => `
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">${escapeHtml(course.courseName)}</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Learner</th>
+                      <th>Email</th>
+                      <th class="text-center">Questions</th>
+                      <th class="text-center">Correct</th>
+                      <th class="text-center">Avg Score</th>
+                      <th>Last Activity</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${course.learners.map(learner => `
+                      <tr>
+                        <td>${escapeHtml(learner.name)}</td>
+                        <td>${escapeHtml(learner.email)}</td>
+                        <td class="text-center">${learner.attempts}</td>
+                        <td class="text-center">
+                          <span class="badge ${learner.correct === learner.attempts ? 'bg-success' : learner.correct > learner.attempts / 2 ? 'bg-info' : 'bg-warning'}">
+                            ${learner.correct} / ${learner.attempts}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge ${learner.averageScore >= 80 ? 'bg-success' : learner.averageScore >= 60 ? 'bg-info' : 'bg-warning'}">
+                            ${learner.averageScore}%
+                          </span>
+                        </td>
+                        <td>${learner.lastActivity ? new Date(learner.lastActivity).toLocaleString() : 'N/A'}</td>
+                        <td>
+                          <button class="btn btn-sm btn-outline-primary" onclick="viewLearnerHistory(${learner.id}, '${course.courseId}', '${escapeHtml(learner.name)}', '${escapeHtml(course.courseName)}')">
+                            View Q&A
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading course performance:', error);
+        container.innerHTML = '<div class="alert alert-danger">Failed to load course performance</div>';
+      }
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('users-table');
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = users.map(user => {
+        const isEnabled = user.enabled === 1 || user.enabled === true;
+        const isEmailVerified = user.email_verified === 1 || user.email_verified === true;
+        const isCurrentUser = user.id === currentUser.id;
+
+        let statusBadges = '';
+        if (isEnabled) {
+          statusBadges += '<span class="badge bg-success me-1">Enabled</span>';
+        } else {
+          statusBadges += '<span class="badge bg-danger me-1">Disabled</span>';
+        }
+        if (isEmailVerified) {
+          statusBadges += '<span class="badge bg-info">Verified</span>';
+        } else {
+          statusBadges += '<span class="badge bg-warning">Unverified</span>';
+        }
+
+        return `
+          <tr class="${!isEnabled ? 'table-secondary' : ''}">
+            <td>${escapeHtml(user.name)}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td>
+              <span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-secondary'}">
+                ${user.role}
+              </span>
+            </td>
+            <td>${statusBadges}</td>
+            <td>${new Date(user.created_at).toLocaleDateString()}</td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" onclick="editUser(${user.id})">Edit</button>
+                <button class="btn btn-outline-info" onclick="viewPerformance(${user.id})">Stats</button>
+                ${!isCurrentUser ? `
+                  <button class="btn ${isEnabled ? 'btn-outline-warning' : 'btn-outline-success'}" onclick="toggleUserEnabled(${user.id}, ${!isEnabled})">
+                    ${isEnabled ? 'Disable' : 'Enable'}
+                  </button>
+                  <button class="btn btn-outline-danger" onclick="deleteUser(${user.id})">Delete</button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function editUser(userId) {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+
+      const isCurrentUser = user.id === currentUser.id;
+
+      document.getElementById('edit-user-id').value = user.id;
+      document.getElementById('edit-name').value = user.name;
+      document.getElementById('edit-email').value = user.email;
+      document.getElementById('edit-role').value = user.role;
+      document.getElementById('edit-enabled').checked = user.enabled === 1 || user.enabled === true;
+
+      // Disable role and enabled change for current user
+      document.getElementById('edit-role').disabled = isCurrentUser;
+      document.getElementById('edit-enabled').disabled = isCurrentUser;
+
+      new bootstrap.Modal(document.getElementById('editUserModal')).show();
+    }
+
+    async function saveUser() {
+      const userId = document.getElementById('edit-user-id').value;
+      const name = document.getElementById('edit-name').value;
+      const email = document.getElementById('edit-email').value;
+      const role = document.getElementById('edit-role').value;
+      const enabled = document.getElementById('edit-enabled').checked;
+
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, role, enabled })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Failed to update user');
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+        await loadUsers();
+        await loadStats();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Failed to delete user');
+        }
+
+        await loadUsers();
+        await loadStats();
+        await loadCoursePerformance();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function toggleUserEnabled(userId, enabled) {
+      const action = enabled ? 'enable' : 'disable';
+      if (!confirm(`Are you sure you want to ${action} this user?`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || `Failed to ${action} user`);
+        }
+
+        await loadUsers();
+        await loadStats();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
+    async function viewPerformance(userId) {
+      const content = document.getElementById('performance-content');
+      content.innerHTML = 'Loading...';
+
+      new bootstrap.Modal(document.getElementById('viewPerformanceModal')).show();
+
+      try {
+        const res = await fetch(`/api/admin/users/${userId}/performance`);
+        if (!res.ok) throw new Error('Failed to load performance');
+
+        const data = await res.json();
+
+        content.innerHTML = `
+          <h6>${escapeHtml(data.user.name)} (${escapeHtml(data.user.email)})</h6>
+          <hr>
+          <div class="row mb-3">
+            <div class="col-4 text-center">
+              <h3>${data.stats.totalQuestions || 0}</h3>
+              <small class="text-muted">Questions</small>
+            </div>
+            <div class="col-4 text-center">
+              <h3>${data.stats.correctAnswers || 0}</h3>
+              <small class="text-muted">Correct</small>
+            </div>
+            <div class="col-4 text-center">
+              <h3>${Math.round(data.stats.averageScore || 0)}%</h3>
+              <small class="text-muted">Avg Score</small>
+            </div>
+          </div>
+          ${data.recent.length > 0 ? `
+            <h6>Recent Activity</h6>
+            <ul class="list-group list-group-flush">
+              ${data.recent.slice(0, 10).map(p => `
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>${p.topic_id || 'Unknown Topic'} - ${p.question_type || 'Unknown Type'}</span>
+                  <span class="badge ${p.is_correct ? 'bg-success' : 'bg-danger'}">${p.score}%</span>
+                </li>
+              `).join('')}
+            </ul>
+          ` : '<p class="text-muted">No activity yet</p>'}
+        `;
+      } catch (error) {
+        content.innerHTML = '<p class="text-danger">Failed to load performance</p>';
+      }
+    }
+
+    async function viewLearnerHistory(userId, courseId, learnerName, courseName) {
+      const content = document.getElementById('learner-history-content');
+      document.getElementById('learnerHistoryTitle').textContent = learnerName + ' - ' + courseName + ' Q&A History';
+      content.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div><p>Loading history...</p></div>';
+
+      new bootstrap.Modal(document.getElementById('learnerHistoryModal')).show();
+
+      try {
+        const res = await fetch('/api/admin/users/' + userId + '/history?courseId=' + courseId);
+        if (!res.ok) throw new Error('Failed to load history');
+
+        const data = await res.json();
+
+        if (!data.history || data.history.length === 0) {
+          content.innerHTML = '<div class="alert alert-info">No Q&A history found for this learner in this course.</div>';
+          return;
+        }
+
+        const typeLabels = {
+          mcq: 'Multiple Choice',
+          truefalse: 'True/False',
+          concept: 'Concept',
+          comparison: 'Comparison',
+          fillblank: 'Fill Blank'
+        };
+
+        const correctCount = data.history.filter(h => h.result.isCorrect).length;
+        const incorrectCount = data.history.length - correctCount;
+
+        let html = '<div class="mb-3">' +
+          '<span class="badge bg-primary me-2">' + data.history.length + ' Questions</span>' +
+          '<span class="badge bg-success me-2">' + correctCount + ' Correct</span>' +
+          '<span class="badge bg-danger">' + incorrectCount + ' Incorrect</span>' +
+          '</div>' +
+          '<div class="accordion" id="historyAccordion">';
+
+        data.history.forEach((item, index) => {
+          const q = item.question_data;
+          const r = item.result;
+          const isCorrect = r.isCorrect;
+          const date = new Date(item.created_at).toLocaleString();
+
+          let answerDisplay = '';
+          if (q.type === 'mcq' && q.options) {
+            const userIdx = parseInt(item.user_answer);
+            answerDisplay = '<div class="mb-2"><strong>Options:</strong><ul class="mb-0">';
+            q.options.forEach((opt, i) => {
+              let cls = '';
+              let prefix = '';
+              if (i === q.correctAnswer) { cls = 'text-success fw-bold'; prefix = '✓ '; }
+              if (i === userIdx && i !== q.correctAnswer) { cls = 'text-danger'; prefix = '✗ '; }
+              if (i === userIdx) { prefix += '(Learner) '; }
+              answerDisplay += '<li class="' + cls + '">' + prefix + escapeHtml(opt) + '</li>';
+            });
+            answerDisplay += '</ul></div>';
+          } else if (q.type === 'truefalse') {
+            answerDisplay = '<p><strong>Correct Answer:</strong> <span class="text-success">' + (q.correctAnswer ? 'True' : 'False') + '</span></p>' +
+              '<p><strong>Learner\'s Answer:</strong> <span class="' + (isCorrect ? 'text-success' : 'text-danger') + '">' + (item.user_answer === 'true' ? 'True' : 'False') + '</span></p>';
+          } else if (q.type === 'fillblank') {
+            answerDisplay = '<p><strong>Correct Answer:</strong> <span class="text-success">' + escapeHtml(q.correctAnswer || '') + '</span></p>' +
+              '<p><strong>Learner\'s Answer:</strong> <span class="' + (isCorrect ? 'text-success' : 'text-danger') + '">' + escapeHtml(item.user_answer) + '</span></p>';
+          } else {
+            answerDisplay = '<div class="mb-2"><strong>Learner\'s Answer:</strong><div class="bg-light p-2 rounded mt-1">' + escapeHtml(item.user_answer) + '</div></div>';
+            if (q.sampleAnswer) {
+              answerDisplay += '<div class="mb-2"><strong>Sample Answer:</strong><div class="bg-light p-2 rounded mt-1">' + escapeHtml(q.sampleAnswer) + '</div></div>';
+            }
+          }
+
+          html += '<div class="accordion-item">' +
+            '<h2 class="accordion-header">' +
+            '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#history-' + index + '">' +
+            '<span class="me-2 ' + (isCorrect ? 'text-success' : 'text-danger') + '">' + (isCorrect ? '✓' : '✗') + '</span>' +
+            '<span class="badge bg-secondary me-2">' + (typeLabels[q.type] || q.type) + '</span>' +
+            '<span class="badge ' + (isCorrect ? 'bg-success' : 'bg-danger') + ' me-2">' + r.score + '%</span>' +
+            '<span class="text-truncate" style="max-width: 400px;">' + escapeHtml(q.question) + '</span>' +
+            '<small class="text-muted ms-auto me-3">' + date + '</small>' +
+            '</button></h2>' +
+            '<div id="history-' + index + '" class="accordion-collapse collapse" data-bs-parent="#historyAccordion">' +
+            '<div class="accordion-body">' +
+            '<div class="mb-3"><strong>Question:</strong><p class="mb-0">' + escapeHtml(q.question) + '</p></div>' +
+            answerDisplay +
+            '<div class="alert ' + (isCorrect ? 'alert-success' : 'alert-info') + ' mb-2">' +
+            '<strong>Feedback:</strong> ' + escapeHtml(r.feedback || q.explanation || 'No feedback available') + '</div>';
+
+          if (r.strengths && r.strengths.length > 0) {
+            html += '<div class="mt-2"><strong class="text-success">Strengths:</strong><ul class="mb-0">';
+            r.strengths.forEach(s => { html += '<li>' + escapeHtml(s) + '</li>'; });
+            html += '</ul></div>';
+          }
+          if (r.missingPoints && r.missingPoints.length > 0) {
+            html += '<div class="mt-2"><strong class="text-warning">Areas to Improve:</strong><ul class="mb-0">';
+            r.missingPoints.forEach(m => { html += '<li>' + escapeHtml(m) + '</li>'; });
+            html += '</ul></div>';
+          }
+
+          html += '</div></div></div>';
+        });
+
+        html += '</div>';
+        content.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading learner history:', error);
+        content.innerHTML = '<div class="alert alert-danger">Failed to load Q&A history</div>';
+      }
+    }
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/admin/settings');
+        if (!res.ok) throw new Error('Failed to load settings');
+
+        settingsData = await res.json();
+        selectedModel = settingsData.settings.ai_model;
+
+        // Update current model badge
+        document.getElementById('current-model-badge').textContent = settingsData.currentModel.name;
+
+        // Update email verification toggle
+        const emailVerificationEnabled = settingsData.settings.require_email_verification === 'true' || settingsData.settings.require_email_verification === '1';
+        document.getElementById('require-email-verification').checked = emailVerificationEnabled;
+
+        // Update interview requirements
+        document.getElementById('interview-min-questions').value = parseInt(settingsData.settings.interview_min_questions) || 0;
+        document.getElementById('interview-min-score').value = parseInt(settingsData.settings.interview_min_score) || 0;
+        document.getElementById('interview-daily-limit').value = parseInt(settingsData.settings.interview_daily_question_limit) || 50;
+
+        // Render model options
+        renderModelOptions();
+
+        // Check API key status
+        checkApiKeyStatus();
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    }
+
+    async function saveEmailSettings() {
+      const btn = document.getElementById('save-email-settings-btn');
+      const status = document.getElementById('email-settings-status');
+      const enabled = document.getElementById('require-email-verification').checked;
+
+      btn.disabled = true;
+      status.innerHTML = '<span class="text-muted">Saving...</span>';
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ require_email_verification: enabled ? 'true' : 'false' })
+        });
+
+        if (!res.ok) throw new Error('Failed to save settings');
+
+        status.innerHTML = '<span class="text-success">Saved!</span>';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      } catch (error) {
+        console.error('Error saving email settings:', error);
+        status.innerHTML = '<span class="text-danger">Error saving</span>';
+      }
+
+      btn.disabled = false;
+    }
+
+    async function saveInterviewSettings() {
+      const btn = document.getElementById('save-interview-settings-btn');
+      const status = document.getElementById('interview-settings-status');
+      const minQuestions = document.getElementById('interview-min-questions').value;
+      const minScore = document.getElementById('interview-min-score').value;
+      const dailyLimit = document.getElementById('interview-daily-limit').value;
+
+      btn.disabled = true;
+      status.innerHTML = '<span class="text-muted">Saving...</span>';
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            interview_min_questions: minQuestions,
+            interview_min_score: minScore,
+            interview_daily_question_limit: dailyLimit
+          })
+        });
+
+        if (!res.ok) throw new Error('Failed to save settings');
+
+        status.innerHTML = '<span class="text-success">Saved!</span>';
+        setTimeout(() => { status.textContent = ''; }, 3000);
+      } catch (error) {
+        console.error('Error saving interview settings:', error);
+        status.innerHTML = '<span class="text-danger">Error saving</span>';
+      }
+
+      btn.disabled = false;
+    }
+
+    function renderModelOptions() {
+      const container = document.getElementById('model-options');
+
+      // Group models by provider
+      const groqModels = settingsData.availableModels.filter(m => m.provider === 'groq');
+      const anthropicModels = settingsData.availableModels.filter(m => m.provider === 'anthropic');
+
+      let html = '';
+
+      // Groq models
+      html += '<div class="mb-3"><h6 class="text-muted">Groq (Free)</h6>';
+      groqModels.forEach(model => {
+        const isSelected = model.key === selectedModel;
+        html += '<div class="form-check mb-2">' +
+          '<input class="form-check-input model-radio" type="radio" name="ai-model" id="model-' + model.key.replace(':', '-') + '" value="' + model.key + '"' + (isSelected ? ' checked' : '') + '>' +
+          '<label class="form-check-label" for="model-' + model.key.replace(':', '-') + '">' +
+          model.name +
+          '</label></div>';
+      });
+      html += '</div>';
+
+      // Anthropic models
+      html += '<div class="mb-3"><h6 class="text-muted">Anthropic (Claude)</h6>';
+      anthropicModels.forEach(model => {
+        const isSelected = model.key === selectedModel;
+        html += '<div class="form-check mb-2">' +
+          '<input class="form-check-input model-radio" type="radio" name="ai-model" id="model-' + model.key.replace(':', '-') + '" value="' + model.key + '"' + (isSelected ? ' checked' : '') + '>' +
+          '<label class="form-check-label" for="model-' + model.key.replace(':', '-') + '">' +
+          model.name +
+          '</label></div>';
+      });
+      html += '</div>';
+
+      container.innerHTML = html;
+
+      // Add change listeners
+      document.querySelectorAll('.model-radio').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          selectedModel = e.target.value;
+          document.getElementById('save-settings-btn').disabled = false;
+          document.getElementById('settings-save-status').textContent = '';
+        });
+      });
+    }
+
+    async function saveSettings() {
+      const btn = document.getElementById('save-settings-btn');
+      const status = document.getElementById('settings-save-status');
+
+      btn.disabled = true;
+      status.innerHTML = '<span class="text-muted">Saving...</span>';
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ai_model: selectedModel })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Failed to save settings');
+        }
+
+        const data = await res.json();
+        settingsData.currentModel = data.currentModel;
+        document.getElementById('current-model-badge').textContent = data.currentModel.name;
+        status.innerHTML = '<span class="text-success">Settings saved!</span>';
+
+        setTimeout(() => {
+          status.textContent = '';
+        }, 3000);
+      } catch (error) {
+        console.error('Error saving settings:', error);
+        status.innerHTML = '<span class="text-danger">Error: ' + error.message + '</span>';
+        btn.disabled = false;
+      }
+    }
+
+    async function checkApiKeyStatus() {
+      try {
+        const res = await fetch('/api/admin/api-keys-status');
+        if (res.ok) {
+          const data = await res.json();
+          updateApiKeysTable(data);
+        }
+      } catch (error) {
+        // API endpoint might not exist yet, that's ok
+        console.log('Could not check API key status');
+      }
+    }
+
+    function updateApiKeysTable(status) {
+      const tbody = document.getElementById('api-keys-status');
+      tbody.innerHTML = '<tr>' +
+        '<td>Groq</td>' +
+        '<td><code>GROQ_API_KEY</code></td>' +
+        '<td><span class="badge ' + (status.groq ? 'bg-success">Configured' : 'bg-warning">Not Set') + '</span></td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td>Anthropic (Claude)</td>' +
+        '<td><code>ANTHROPIC_API_KEY</code></td>' +
+        '<td><span class="badge ' + (status.anthropic ? 'bg-success">Configured' : 'bg-warning">Not Set') + '</span></td>' +
+        '</tr>';
+    }
+
+    function setupEventListeners() {
+      document.getElementById('save-user-btn').addEventListener('click', saveUser);
+      document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+      document.getElementById('save-email-settings-btn').addEventListener('click', saveEmailSettings);
+      document.getElementById('save-interview-settings-btn').addEventListener('click', saveInterviewSettings);
+
+      // Refresh course performance when tab is shown
+      document.getElementById('performance-tab').addEventListener('shown.bs.tab', loadCoursePerformance);
+      document.getElementById('settings-tab').addEventListener('shown.bs.tab', loadSettings);
+    }
+
+    init();
+  </script>
+</body>
+</html>

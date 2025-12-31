@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SelfEval - Learning Q&A</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">SelfEval</a>
+      <div class="navbar-nav ms-auto" id="nav-items">
+        <a class="nav-link" href="/">Courses</a>
+        <a class="nav-link" href="/signin">Sign In</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <!-- Login Prompt (shown when not logged in) -->
+    <section id="login-section" class="text-center py-5" style="display: none;">
+      <h1 class="display-5 mb-3">Welcome to SelfEval</h1>
+      <p class="lead text-muted mb-4">AI-powered learning and self-evaluation platform</p>
+      <p class="text-muted mb-4">Please sign in to access courses and track your progress</p>
+      <div class="d-flex justify-content-center gap-3">
+        <a href="/signin" class="btn btn-primary btn-lg">Sign In</a>
+        <a href="/signup" class="btn btn-outline-primary btn-lg">Sign Up</a>
+      </div>
+    </section>
+
+    <!-- Main Content (shown when logged in) -->
+    <section id="main-content" style="display: none;">
+      <!-- Header -->
+      <section class="text-center mb-5">
+        <h1 class="display-5 mb-3">Welcome to SelfEval</h1>
+        <p class="lead text-muted">Choose a course to start practicing, take interviews, and track your progress</p>
+      </section>
+
+      <!-- Course Grid -->
+      <section id="courses-section">
+        <div class="row g-4" id="courses-grid">
+          <!-- Courses loaded dynamically -->
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading courses...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Empty State -->
+      <section id="empty-state" class="text-center py-5" style="display: none;">
+        <h4 class="text-muted">No courses available</h4>
+        <p class="text-muted">Create your first course to get started</p>
+        <a href="/manage" class="btn btn-primary">Manage Courses</a>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer mt-auto py-3 bg-light">
+    <div class="container text-center">
+      <span class="text-muted">SelfEval - AI-Powered Learning</span>
+    </div>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Load courses on page load
+    async function loadCourses() {
+      try {
+        const [coursesRes, performanceRes] = await Promise.all([
+          fetch('/api/courses'),
+          fetch('/api/performance')
+        ]);
+
+        const courses = await coursesRes.json();
+        const performance = await performanceRes.json();
+
+        const grid = document.getElementById('courses-grid');
+        const emptyState = document.getElementById('empty-state');
+
+        if (!courses || courses.length === 0) {
+          grid.innerHTML = '';
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        grid.innerHTML = courses.map(course => {
+          const coursePerf = performance.byCourse?.[course.id] || {};
+          const attempts = coursePerf.attempts || 0;
+          const avgScore = coursePerf.averageScore || 0;
+          const topicCount = course.topics?.length || 0;
+
+          // Progress indicator
+          let progressClass = 'bg-secondary';
+          let progressText = 'Not started';
+          if (attempts > 0) {
+            if (avgScore >= 80) {
+              progressClass = 'bg-success';
+              progressText = `${avgScore}% avg`;
+            } else if (avgScore >= 60) {
+              progressClass = 'bg-info';
+              progressText = `${avgScore}% avg`;
+            } else {
+              progressClass = 'bg-warning';
+              progressText = `${avgScore}% avg`;
+            }
+          }
+
+          return `
+            <div class="col-md-6 col-lg-4">
+              <div class="card course-card h-100" onclick="window.location.href='/course/${course.id}'">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">${course.name}</h5>
+                    <span class="badge ${progressClass}">${progressText}</span>
+                  </div>
+                  <p class="card-text text-muted small">${course.description || ''}</p>
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                      <strong>${topicCount}</strong> topics
+                    </small>
+                    ${attempts > 0 ? `<small class="text-muted">${attempts} questions attempted</small>` : ''}
+                  </div>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                  <div class="d-flex gap-2">
+                    <span class="btn btn-sm btn-outline-primary flex-grow-1">Practice</span>
+                    <span class="btn btn-sm btn-outline-secondary flex-grow-1">Interview</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Error loading courses:', error);
+        document.getElementById('courses-grid').innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-danger">Failed to load courses. Please try again.</div>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize on DOM ready
+    document.addEventListener('DOMContentLoaded', async () => {
+      await updateNavbar();
+
+      // Check if user is logged in
+      const user = await getCurrentUser();
+
+      if (user) {
+        // Show main content for logged-in users
+        document.getElementById('main-content').style.display = 'block';
+        await loadCourses();
+      } else {
+        // Show login prompt for guests
+        document.getElementById('login-section').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

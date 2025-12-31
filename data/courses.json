@@ -1,0 +1,280 @@
+{
+  "courses": [
+    {
+      "name": "Fullstack Development",
+      "description": "",
+      "topics": [
+        {
+          "name": "Linux",
+          "description": "Open-source operating system and command-line environment for development",
+          "subtopics": [
+            "Introduction to Linux OS",
+            "Basic Linux Commands",
+            "Shell Scripting Fundamentals"
+          ],
+          "id": "linux"
+        },
+        {
+          "name": "Git",
+          "description": "Distributed version control system for source code management",
+          "subtopics": [
+            "Version Control Concepts (VCS, CVCS, DVCS)",
+            "Git Fundamentals and Setup",
+            "Git Branching and Merging",
+            "Remote Repositories and Collaboration",
+            "Pull Requests and Code Review"
+          ],
+          "id": "git"
+        },
+        {
+          "name": "HTTP",
+          "description": "HyperText Transfer Protocol for web communication",
+          "subtopics": [
+            "HTTP Methods and Lifecycle",
+            "HTTP Status Codes",
+            "HTTP Headers and Cookies"
+          ],
+          "id": "http"
+        },
+        {
+          "name": "HTML",
+          "description": "HyperText Markup Language for web page structure and content",
+          "subtopics": [
+            "HTML Overview and HTML5 Features",
+            "Document Object Model (DOM)",
+            "HTML Elements, Tags, and Attributes",
+            "HTML Forms and Form Elements",
+            "Form Input Types and Validation",
+            "Web Storage (localStorage, sessionStorage, WebSQL)",
+            "Geolocation API"
+          ],
+          "id": "html"
+        },
+        {
+          "name": "CSS",
+          "description": "Cascading Style Sheets for styling and visual design",
+          "subtopics": [
+            "CSS Syntax and Selectors",
+            "Text and Font Styling",
+            "Box Model (Content, Padding, Border, Margin)",
+            "Colors, Backgrounds, Borders, and Effects",
+            "Display and Position Properties",
+            "Layout with CSS (Float, Flexbox, CSS Grid)",
+            "Responsive Design with Media Queries and Breakpoints"
+          ],
+          "id": "css"
+        },
+        {
+          "name": "Flexbox",
+          "description": "Modern CSS layout technique for flexible and responsive designs",
+          "subtopics": [
+            "Flexbox Layout Fundamentals",
+            "Flex Direction, Justify-Content, and Alignment",
+            "Responsive Web Design with Flexbox"
+          ],
+          "id": "flexbox"
+        },
+        {
+          "name": "CSS Grid",
+          "description": "Two-dimensional layout system for complex web page designs",
+          "subtopics": [
+            "Grid Layout Fundamentals",
+            "Grid Template, Columns, and Rows",
+            "Grid-Based Responsive Design"
+          ],
+          "id": "css-grid"
+        },
+        {
+          "name": "JavaScript",
+          "description": "Dynamic programming language for client-side web interactivity",
+          "subtopics": [
+            "JavaScript Fundamentals and Getting Started",
+            "Variables, Data Types, and Operators",
+            "Control Flow and Functions",
+            "Objects and Arrays",
+            "Array Methods (forEach, map, filter, reduce)"
+          ],
+          "id": "javascript"
+        },
+        {
+          "name": "Asynchronous JavaScript",
+          "description": "Advanced JavaScript patterns for handling asynchronous operations",
+          "subtopics": [
+            "Synchronous vs Asynchronous Programming",
+            "Call Stack and Event Loop",
+            "Callbacks and Promises",
+            "Async/Await"
+          ],
+          "id": "asynchronous-javascript"
+        },
+        {
+          "name": "Bootstrap",
+          "description": "Front-end CSS framework for responsive and mobile-first design",
+          "subtopics": [
+            "Bootstrap Setup and Installation",
+            "Bootstrap Grid System and Responsive Layout",
+            "Bootstrap Components and Utilities",
+            "Bootstrap Customization"
+          ],
+          "id": "bootstrap"
+        },
+        {
+          "name": "Agile & Scrum",
+          "description": "Agile methodology and Scrum framework for iterative project management",
+          "subtopics": [
+            "Agile Principles and Values",
+            "Scrum Framework and Roles",
+            "Scrum Artifacts (Product Backlog, Sprint Backlog, Increment)",
+            "Scrum Ceremonies (Sprint Planning, Daily Standup, Review, Retrospective)",
+            "Agile User Stories and Acceptance Criteria",
+            "Estimation and Planning (Story Points, Planning Poker)",
+            "Velocity, Burndown Charts, and Burnup Charts",
+            "Project Boards and Agile Tools"
+          ],
+          "id": "agile-scrum"
+        },
+        {
+          "name": "Java",
+          "description": "Object-oriented programming language for enterprise application development",
+          "subtopics": [
+            "Object-Oriented Programming (Classes, Objects, Inheritance, Polymorphism)",
+            "Encapsulation and Abstraction",
+            "Variables, Data Types, and Operators",
+            "Control Flow (if/else, Loops, Switch)",
+            "Methods and Method Overloading",
+            "Exception Handling (Try-Catch-Finally)",
+            "Collections Framework (Lists, Sets, Maps)",
+            "Iterators and Generics",
+            "File I/O and Streams",
+            "Threading and Concurrency",
+            "Lambda Expressions and Stream API"
+          ],
+          "id": "java"
+        },
+        {
+          "name": "Spring Framework",
+          "description": "Enterprise Java framework for building scalable applications",
+          "subtopics": [
+            "Dependency Injection (DI) and Inversion of Control (IoC)",
+            "Spring Beans and Bean Lifecycle",
+            "Spring MVC and Request Handling",
+            "Spring Data JPA and ORM",
+            "Transaction Management",
+            "Spring Security",
+            "Aspect-Oriented Programming (AOP)"
+          ],
+          "id": "spring-framework"
+        },
+        {
+          "name": "Spring Boot",
+          "description": "Spring-based framework for rapid development of production-ready applications",
+          "subtopics": [
+            "Spring Boot Auto-Configuration and Starter Dependencies",
+            "Embedded Servers and Server Configuration",
+            "Application Properties and Profiles",
+            "RESTful Web Services Development",
+            "Error Handling and Exception Management",
+            "Actuator, Health Checks, and Monitoring",
+            "Testing Spring Boot Applications"
+          ],
+          "id": "spring-boot"
+        },
+        {
+          "name": "MySQL",
+          "description": "Relational database management system for data persistence",
+          "subtopics": [
+            "Database Design and Schema",
+            "Data Types and Constraints",
+            "Normalization",
+            "SQL Queries (SELECT, INSERT, UPDATE, DELETE)",
+            "Joins and Relationships",
+            "Indexes and Query Optimization",
+            "Transactions and ACID Properties",
+            "Stored Procedures and Triggers",
+            "Aggregation and String Functions"
+          ],
+          "id": "mysql"
+        },
+        {
+          "name": "JDBC",
+          "description": "Java Database Connectivity API for database operations",
+          "subtopics": [
+            "JDBC Architecture and Drivers",
+            "Connection Management and Connection Pooling",
+            "Statements and Prepared Statements",
+            "ResultSet Processing and Metadata",
+            "Exception Handling",
+            "Batch Operations",
+            "Transactions"
+          ],
+          "id": "jdbc"
+        },
+        {
+          "name": "Angular",
+          "description": "TypeScript-based framework for building single-page applications",
+          "subtopics": [
+            "Angular Architecture (Modules, Components, Services)",
+            "Dependency Injection",
+            "Templates and Data Binding",
+            "Directives (Structural and Attribute)",
+            "Services and Component Communication",
+            "Routing and Navigation",
+            "Forms (Template-Driven and Reactive)",
+            "HTTP Client and API Integration",
+            "RxJS Observables",
+            "Pipes and Custom Pipes",
+            "Lifecycle Hooks"
+          ],
+          "id": "angular"
+        },
+        {
+          "name": "Docker",
+          "description": "Containerization platform for packaging and deploying applications",
+          "subtopics": [
+            "Docker Images and Containers",
+            "Dockerfile Creation and Build Process",
+            "Docker Registries and Repositories",
+            "Container Management (Running, Stopping, Logging)",
+            "Docker Compose for Multi-Container Applications",
+            "Volumes and Networking",
+            "Best Practices and Security"
+          ],
+          "id": "docker"
+        },
+        {
+          "name": "Kubernetes",
+          "description": "Container orchestration platform for managing containerized applications at scale",
+          "subtopics": [
+            "Kubernetes Architecture and Components",
+            "Pods and Deployments",
+            "Services and Service Discovery",
+            "ConfigMaps and Secrets",
+            "Persistent Storage (PV and PVC)",
+            "Namespaces and RBAC",
+            "Ingress and Networking",
+            "Health Checks (Liveness, Readiness, Startup Probes)",
+            "Rolling Updates and Scaling"
+          ],
+          "id": "kubernetes"
+        },
+        {
+          "name": "GCP",
+          "description": "Google Cloud Platform for cloud-native application deployment",
+          "subtopics": [
+            "GCP Projects and Regions/Zones",
+            "Compute Services (Compute Engine, App Engine, Cloud Functions, Cloud Run)",
+            "Google Kubernetes Engine (GKE)",
+            "Cloud Storage",
+            "Cloud SQL and Databases",
+            "Cloud Monitoring and Logging",
+            "Cloud Build and CI/CD Pipelines",
+            "Identity and Access Management (IAM)",
+            "Security and Key Management"
+          ],
+          "id": "gcp"
+        }
+      ],
+      "id": "fullstack-development"
+    }
+  ]
+}

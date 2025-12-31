@@ -1,0 +1,381 @@
+{
+  "overall": {
+    "totalQuestions": 25,
+    "correctAnswers": 15,
+    "totalScore": 1560,
+    "averageScore": 62
+  },
+  "byCourse": {
+    "fullstack-web-dev": {
+      "name": "Full Stack Web Development",
+      "attempts": 9,
+      "correct": 4,
+      "totalScore": 420,
+      "averageScore": 47,
+      "topics": {
+        "javascript": {
+          "name": "JavaScript",
+          "attempts": 1,
+          "correct": 0,
+          "totalScore": 20,
+          "averageScore": 20
+        },
+        "databases": {
+          "name": "Databases",
+          "attempts": 5,
+          "correct": 3,
+          "totalScore": 300,
+          "averageScore": 60
+        },
+        "react": {
+          "name": "React",
+          "attempts": 2,
+          "correct": 1,
+          "totalScore": 100,
+          "averageScore": 50
+        },
+        "git": {
+          "name": "Git & DevOps",
+          "attempts": 1,
+          "correct": 0,
+          "totalScore": 0,
+          "averageScore": 0
+        }
+      }
+    },
+    "devops": {
+      "name": "Revature Fullstack",
+      "attempts": 16,
+      "correct": 11,
+      "totalScore": 1140,
+      "averageScore": 71,
+      "topics": {
+        "environment-setup-linux-fundamentals": {
+          "name": "Environment Setup & Linux Fundamentals",
+          "attempts": 16,
+          "correct": 11,
+          "totalScore": 1140,
+          "averageScore": 71
+        }
+      },
+      "byType": {
+        "concept": {
+          "attempts": 1,
+          "correct": 0,
+          "totalScore": 0
+        },
+        "fillblank": {
+          "attempts": 1,
+          "correct": 0,
+          "totalScore": 0
+        },
+        "mcq": {
+          "attempts": 13,
+          "correct": 11,
+          "totalScore": 1100
+        }
+      }
+    }
+  },
+  "byTopic": {
+    "fullstack-web-dev:javascript": {
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "javascript",
+      "name": "JavaScript",
+      "attempts": 1,
+      "correct": 0,
+      "totalScore": 20,
+      "averageScore": 20
+    },
+    "fullstack-web-dev:databases": {
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "databases",
+      "name": "Databases",
+      "attempts": 5,
+      "correct": 3,
+      "totalScore": 300,
+      "averageScore": 60
+    },
+    "fullstack-web-dev:react": {
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "react",
+      "name": "React",
+      "attempts": 2,
+      "correct": 1,
+      "totalScore": 100,
+      "averageScore": 50
+    },
+    "fullstack-web-dev:git": {
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "git",
+      "name": "Git & DevOps",
+      "attempts": 1,
+      "correct": 0,
+      "totalScore": 0,
+      "averageScore": 0
+    },
+    "devops:environment-setup-linux-fundamentals": {
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "name": "Environment Setup & Linux Fundamentals",
+      "attempts": 16,
+      "correct": 11,
+      "totalScore": 1140,
+      "averageScore": 71
+    }
+  },
+  "byQuestionType": {
+    "mcq": {
+      "attempts": 14,
+      "correct": 12,
+      "totalScore": 1200
+    },
+    "truefalse": {
+      "attempts": 4,
+      "correct": 2,
+      "totalScore": 200
+    },
+    "concept": {
+      "attempts": 4,
+      "correct": 1,
+      "totalScore": 140
+    },
+    "comparison": {
+      "attempts": 1,
+      "correct": 0,
+      "totalScore": 20
+    },
+    "fillblank": {
+      "attempts": 2,
+      "correct": 0,
+      "totalScore": 0
+    }
+  },
+  "recentActivity": [
+    {
+      "timestamp": "2025-12-30T15:43:46.571Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 0,
+      "isCorrect": false,
+      "question": "What is the primary purpose of the /proc filesystem in a Linux operating system?"
+    },
+    {
+      "timestamp": "2025-12-30T15:42:33.100Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary function of the 'cd' command in Linux?"
+    },
+    {
+      "timestamp": "2025-12-30T15:41:54.320Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the shebang line in a shell script?"
+    },
+    {
+      "timestamp": "2025-12-30T15:41:34.552Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary function of the 'cd' command in Linux?"
+    },
+    {
+      "timestamp": "2025-12-30T15:40:43.204Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary function of the Linux Shell in a Linux Operating System?"
+    },
+    {
+      "timestamp": "2025-12-30T15:39:41.534Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the '/etc/fstab' file in a Linux system?"
+    },
+    {
+      "timestamp": "2025-12-30T15:37:45.888Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the shebang line (#!) in a shell script, and how does it affect the execution of the script?"
+    },
+    {
+      "timestamp": "2025-12-30T15:37:19.939Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the /proc filesystem in a Linux operating system?"
+    },
+    {
+      "timestamp": "2025-12-30T15:36:40.673Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the shebang line (#!) at the beginning of a shell script?"
+    },
+    {
+      "timestamp": "2025-12-30T15:36:24.009Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 0,
+      "isCorrect": false,
+      "question": "In a Full Stack Development environment, what is the primary role of a Linux-based server when using a MEAN (MongoDB, Express.js, Angular, Node.js) stack?"
+    },
+    {
+      "timestamp": "2025-12-30T15:32:40.006Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the 'shebang' line in a Linux shell script?"
+    },
+    {
+      "timestamp": "2025-12-30T15:32:20.092Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary function of the 'shebang' line in a Linux shell script?"
+    },
+    {
+      "timestamp": "2025-12-30T15:32:08.967Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "mcq",
+      "score": 100,
+      "isCorrect": true,
+      "question": "What is the primary purpose of the 'shebang' line in a Linux shell script?"
+    },
+    {
+      "timestamp": "2025-12-30T13:40:59.107Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "fillblank",
+      "score": 0,
+      "isCorrect": false,
+      "question": "When setting up a Linux environment for full stack development, it is essential to have a good understanding of _____ to effectively manage and automate tasks, such as setting up servers, configuring databases, and deploying applications."
+    },
+    {
+      "timestamp": "2025-12-30T13:40:29.068Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "concept",
+      "score": 0,
+      "isCorrect": false,
+      "question": "Explain the concept of Shell Scripting in your own words."
+    },
+    {
+      "timestamp": "2025-12-30T11:25:38.607Z",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "topicId": "environment-setup-linux-fundamentals",
+      "topicName": "Environment Setup & Linux Fundamentals",
+      "questionType": "concept",
+      "score": 40,
+      "isCorrect": false,
+      "question": "Explain the concept of Shell Scripting in your own words."
+    },
+    {
+      "timestamp": "2025-12-30T10:55:18.442Z",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "git",
+      "topicName": "Git & DevOps",
+      "questionType": "fillblank",
+      "score": 0,
+      "isCorrect": false,
+      "question": "When working with feature branches in a Git repository, using the command _____ allows developers to integrate changes from the main branch into their feature branch, ensuring their code is up-to-date before merging it back into the main branch."
+    },
+    {
+      "timestamp": "2025-12-30T10:38:42.534Z",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "react",
+      "topicName": "React",
+      "questionType": "truefalse",
+      "score": 0,
+      "isCorrect": false,
+      "question": "In React, using the useState hook with an initial value that is an object will automatically trigger a re-render of the component whenever any property of that object changes."
+    },
+    {
+      "timestamp": "2025-12-30T10:38:07.419Z",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "react",
+      "topicName": "React",
+      "questionType": "truefalse",
+      "score": 100,
+      "isCorrect": true,
+      "question": "When using React Hooks, the useState hook can only be used at the top level of a functional component, and not inside any nested functions or conditional statements."
+    },
+    {
+      "timestamp": "2025-12-30T10:30:59.120Z",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "topicId": "databases",
+      "topicName": "Databases",
+      "questionType": "truefalse",
+      "score": 100,
+      "isCorrect": true,
+      "question": "In a relational database, using an index on a column that is frequently updated can actually decrease the performance of write operations."
+    }
+  ]
+}

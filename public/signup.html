@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - SelfEval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">SelfEval</a>
+    </div>
+  </nav>
+
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+          <div class="card-body p-4">
+            <h2 class="text-center mb-4">Create Account</h2>
+
+            <div id="error-alert" class="alert alert-danger d-none" role="alert"></div>
+
+            <div id="signup-form-container">
+              <form id="signup-form">
+                <div class="mb-3">
+                  <label for="name" class="form-label">Full Name</label>
+                  <input type="text" class="form-control" id="name" required autocomplete="name">
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" required autocomplete="email">
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" required minlength="6" autocomplete="new-password">
+                  <div class="form-text">At least 6 characters</div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="confirm-password" class="form-label">Confirm Password</label>
+                  <input type="password" class="form-control" id="confirm-password" required autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="submit-btn">
+                  Create Account
+                </button>
+              </form>
+
+              <hr class="my-4">
+
+              <p class="text-center text-muted mb-0">
+                Already have an account? <a href="/signin">Sign In</a>
+              </p>
+            </div>
+
+            <div id="verification-sent" class="text-center" style="display: none;">
+              <div class="text-success mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-envelope-check" viewBox="0 0 16 16">
+                  <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l7-4.2V8.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2Zm10.5 7.5a.5.5 0 0 0-1 0v2a.5.5 0 0 0 1 0v-2Zm0 3a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0Z"/>
+                  <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514Z"/>
+                </svg>
+              </div>
+              <h4>Check Your Email</h4>
+              <p class="text-muted">We've sent a verification link to <strong id="verification-email"></strong></p>
+              <p class="text-muted small">Click the link in the email to verify your account.</p>
+              <div class="alert alert-info small mt-3">
+                <strong>Note:</strong> After verifying your email, an administrator will need to enable your account before you can sign in.
+              </div>
+              <hr class="my-4">
+              <p class="text-muted small">Didn't receive the email? Check your spam folder or</p>
+              <button class="btn btn-outline-primary btn-sm" id="resend-btn">Resend Verification Email</button>
+              <div id="resend-message" class="mt-2"></div>
+              <hr class="my-4">
+              <a href="/signin" class="btn btn-secondary">Go to Sign In</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let signupEmail = null;
+
+    // Check if already logged in
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          window.location.href = '/';
+        }
+      } catch (e) {}
+    }
+    checkAuth();
+
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const submitBtn = document.getElementById('submit-btn');
+      const errorAlert = document.getElementById('error-alert');
+
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        errorAlert.textContent = 'Passwords do not match';
+        errorAlert.classList.remove('d-none');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating account...';
+      errorAlert.classList.add('d-none');
+
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Sign up failed');
+        }
+
+        // Check if verification is required
+        if (data.requiresVerification) {
+          signupEmail = email;
+          document.getElementById('signup-form-container').style.display = 'none';
+          document.getElementById('verification-sent').style.display = 'block';
+          document.getElementById('verification-email').textContent = email;
+        } else {
+          // Redirect to signin with pending approval message
+          window.location.href = '/signin?pending=approval';
+        }
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('d-none');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Account';
+      }
+    });
+
+    document.getElementById('resend-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('resend-btn');
+      const messageDiv = document.getElementById('resend-message');
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      messageDiv.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/auth/resend-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: signupEmail })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          messageDiv.innerHTML = '<div class="alert alert-success">Email sent! Check your inbox.</div>';
+        } else {
+          messageDiv.innerHTML = '<div class="alert alert-danger">' + (data.error || 'Failed to send') + '</div>';
+        }
+      } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger">Network error</div>';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Resend Verification Email';
+    });
+  </script>
+</body>
+</html>

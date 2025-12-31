@@ -1,0 +1,661 @@
+{
+  "questions": [
+    {
+      "id": "1767109426574",
+      "timestamp": "2025-12-30T15:43:46.574Z",
+      "question": {
+        "question": "What is the primary purpose of the /proc filesystem in a Linux operating system?",
+        "options": [
+          "To provide a temporary storage area for system processes",
+          "To offer a kernel-side representation of system resources and process information",
+          "To serve as a mount point for external storage devices",
+          "To store system configuration files and user preferences"
+        ],
+        "correctAnswer": 1,
+        "explanation": "The /proc filesystem is a virtual filesystem that provides a kernel-side representation of system resources and process information. It allows users to access and modify kernel parameters, view system statistics, and monitor process activity. This filesystem is not used for temporary storage, external device mounting, or storing system configuration files, making option B the correct answer.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "[SKIPPED]",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Question skipped."
+      }
+    },
+    {
+      "id": "1767109353103",
+      "timestamp": "2025-12-30T15:42:33.104Z",
+      "question": {
+        "question": "What is the primary function of the 'cd' command in Linux?",
+        "options": [
+          "To create a new directory",
+          "To change the current directory",
+          "To delete an existing directory",
+          "To copy files from one directory to another"
+        ],
+        "correctAnswer": 1,
+        "explanation": "The 'cd' command is used to change the current working directory to a specified directory. This command allows users to navigate through the Linux file system. Option A is incorrect because 'mkdir' is used to create new directories, not 'cd'. Option C is incorrect because 'rmdir' is used to delete empty directories. Option D is incorrect because 'cp' is used to copy files, not 'cd'.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "1",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The 'cd' command is used to change the current working directory to a specified directory. This command allows users to navigate through the Linux file system. Option A is incorrect because 'mkdir' is used to create new directories, not 'cd'. Option C is incorrect because 'rmdir' is used to delete empty directories. Option D is incorrect because 'cp' is used to copy files, not 'cd'."
+      }
+    },
+    {
+      "id": "1767109314323",
+      "timestamp": "2025-12-30T15:41:54.323Z",
+      "question": {
+        "question": "What is the primary purpose of the shebang line in a shell script?",
+        "options": [
+          "To specify the shell interpreter",
+          "To define the script's variables",
+          "To execute the script in debug mode",
+          "To comment out the script's code"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The shebang line, typically '#!/bin/bash', is used to specify the shell interpreter that should be used to run the script. This line is crucial as it tells the system which interpreter to use when running the script. The other options are incorrect because defining variables, executing in debug mode, and commenting out code are not the primary purposes of the shebang line.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The shebang line, typically '#!/bin/bash', is used to specify the shell interpreter that should be used to run the script. This line is crucial as it tells the system which interpreter to use when running the script. The other options are incorrect because defining variables, executing in debug mode, and commenting out code are not the primary purposes of the shebang line."
+      }
+    },
+    {
+      "id": "1767109294555",
+      "timestamp": "2025-12-30T15:41:34.555Z",
+      "question": {
+        "question": "What is the primary function of the 'cd' command in Linux?",
+        "options": [
+          "To create a new directory",
+          "To delete an existing file",
+          "To change the current working directory",
+          "To list the contents of a directory"
+        ],
+        "correctAnswer": 2,
+        "explanation": "The 'cd' command is used to change the current working directory in Linux. It allows users to navigate through the file system and switch between different directories. Option A is incorrect because the 'mkdir' command is used to create new directories. Option B is incorrect because the 'rm' command is used to delete files and directories. Option D is incorrect because the 'ls' command is used to list the contents of a directory.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "2",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The 'cd' command is used to change the current working directory in Linux. It allows users to navigate through the file system and switch between different directories. Option A is incorrect because the 'mkdir' command is used to create new directories. Option B is incorrect because the 'rm' command is used to delete files and directories. Option D is incorrect because the 'ls' command is used to list the contents of a directory."
+      }
+    },
+    {
+      "id": "1767109243206",
+      "timestamp": "2025-12-30T15:40:43.206Z",
+      "question": {
+        "question": "What is the primary function of the Linux Shell in a Linux Operating System?",
+        "options": [
+          "To manage hardware resources",
+          "To provide a graphical user interface",
+          "To execute commands and scripts",
+          "To store and manage user files"
+        ],
+        "correctAnswer": 2,
+        "explanation": "The Linux Shell is a command-line interface that allows users to interact with the operating system by executing commands, running scripts, and managing files and directories. It acts as an intermediary between the user and the kernel, providing a layer of abstraction and making it easier to perform various tasks. Options A, B, and D are incorrect because while the shell may indirectly interact with hardware resources, provide access to graphical interfaces, or manage files, these are not its primary functions.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "2",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The Linux Shell is a command-line interface that allows users to interact with the operating system by executing commands, running scripts, and managing files and directories. It acts as an intermediary between the user and the kernel, providing a layer of abstraction and making it easier to perform various tasks. Options A, B, and D are incorrect because while the shell may indirectly interact with hardware resources, provide access to graphical interfaces, or manage files, these are not its primary functions."
+      }
+    },
+    {
+      "id": "1767109181536",
+      "timestamp": "2025-12-30T15:39:41.536Z",
+      "question": {
+        "question": "What is the primary purpose of the '/etc/fstab' file in a Linux system?",
+        "options": [
+          "To store user passwords",
+          "To configure network settings",
+          "To mount file systems automatically during boot",
+          "To manage system user accounts"
+        ],
+        "correctAnswer": 2,
+        "explanation": "The '/etc/fstab' file is used to specify how disk partitions, block devices, or remote file systems should be mounted into the filesystem. This allows the system to automatically mount the specified filesystems during boot, making it easier to manage storage devices. The other options are incorrect because '/etc/fstab' is not related to password storage, network configuration, or user account management.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "2",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The '/etc/fstab' file is used to specify how disk partitions, block devices, or remote file systems should be mounted into the filesystem. This allows the system to automatically mount the specified filesystems during boot, making it easier to manage storage devices. The other options are incorrect because '/etc/fstab' is not related to password storage, network configuration, or user account management."
+      }
+    },
+    {
+      "id": "1767109065890",
+      "timestamp": "2025-12-30T15:37:45.890Z",
+      "question": {
+        "question": "What is the primary purpose of the shebang line (#!) in a shell script, and how does it affect the execution of the script?",
+        "options": [
+          "It specifies the shell interpreter to use for the script, allowing the script to be executed directly from the command line.",
+          "It sets the script's permissions, determining which users can execute the script.",
+          "It defines the script's environment variables, which are used to customize the script's behavior.",
+          "It comments out the first line of the script, preventing it from being executed."
+        ],
+        "correctAnswer": 0,
+        "explanation": "The shebang line (#!) is used to specify the interpreter that should be used to run the script. This allows the script to be executed directly from the command line, without the need to invoke the interpreter manually. For example, #!/bin/bash tells the system to use the Bash shell to interpret the script. The other options are incorrect because the shebang line does not set permissions, define environment variables, or comment out the first line of the script.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The shebang line (#!) is used to specify the interpreter that should be used to run the script. This allows the script to be executed directly from the command line, without the need to invoke the interpreter manually. For example, #!/bin/bash tells the system to use the Bash shell to interpret the script. The other options are incorrect because the shebang line does not set permissions, define environment variables, or comment out the first line of the script."
+      }
+    },
+    {
+      "id": "1767109039941",
+      "timestamp": "2025-12-30T15:37:19.941Z",
+      "question": {
+        "question": "What is the primary purpose of the /proc filesystem in a Linux operating system?",
+        "options": [
+          "To store system configuration files",
+          "To provide a virtual filesystem for process information",
+          "To manage user accounts and permissions",
+          "To store temporary files and buffers"
+        ],
+        "correctAnswer": 1,
+        "explanation": "The /proc filesystem is a virtual filesystem that provides information about running processes, system memory, and other system details. It does not store configuration files, manage user accounts, or store temporary files. The correct answer is Option B because /proc provides a dynamic, real-time view of system operations, making it an essential tool for system administration and monitoring.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "1",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The /proc filesystem is a virtual filesystem that provides information about running processes, system memory, and other system details. It does not store configuration files, manage user accounts, or store temporary files. The correct answer is Option B because /proc provides a dynamic, real-time view of system operations, making it an essential tool for system administration and monitoring."
+      }
+    },
+    {
+      "id": "1767109000676",
+      "timestamp": "2025-12-30T15:36:40.676Z",
+      "question": {
+        "question": "What is the primary purpose of the shebang line (#!) at the beginning of a shell script?",
+        "options": [
+          "To specify the shell interpreter that should be used to run the script",
+          "To define variables and functions used in the script",
+          "To specify the output file for the script",
+          "To define the script's execution permissions"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The shebang line (#!) is used to specify the interpreter that should be used to run the script. For example, #!/bin/bash tells the system to use the Bash shell to interpret the script. This is necessary because Linux systems do not know how to execute scripts by default, and the shebang line provides a way to tell the system which interpreter to use. The other options are incorrect because they do not accurately describe the purpose of the shebang line.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The shebang line (#!) is used to specify the interpreter that should be used to run the script. For example, #!/bin/bash tells the system to use the Bash shell to interpret the script. This is necessary because Linux systems do not know how to execute scripts by default, and the shebang line provides a way to tell the system which interpreter to use. The other options are incorrect because they do not accurately describe the purpose of the shebang line."
+      }
+    },
+    {
+      "id": "1767108984013",
+      "timestamp": "2025-12-30T15:36:24.013Z",
+      "question": {
+        "question": "In a Full Stack Development environment, what is the primary role of a Linux-based server when using a MEAN (MongoDB, Express.js, Angular, Node.js) stack?",
+        "options": [
+          "To serve static HTML and CSS files directly to the client",
+          "To act as a reverse proxy for the Node.js application server",
+          "To host the MongoDB database and handle database queries",
+          "To execute Angular code on the server-side before sending it to the client"
+        ],
+        "correctAnswer": 1,
+        "explanation": "In a MEAN stack, the Linux-based server typically acts as a reverse proxy for the Node.js application server. This means it handles incoming requests, routes them to the appropriate Node.js application server, and then sends the response back to the client. While a Linux server can host static files, this is not its primary role in a MEAN stack. Similarly, MongoDB is typically hosted on a separate server or service, and Angular code is executed on the client-side. Therefore, option B is the correct answer.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "2",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Incorrect. The correct answer was: \"To act as a reverse proxy for the Node.js application server\". In a MEAN stack, the Linux-based server typically acts as a reverse proxy for the Node.js application server. This means it handles incoming requests, routes them to the appropriate Node.js application server, and then sends the response back to the client. While a Linux server can host static files, this is not its primary role in a MEAN stack. Similarly, MongoDB is typically hosted on a separate server or service, and Angular code is executed on the client-side. Therefore, option B is the correct answer."
+      }
+    },
+    {
+      "id": "1767108760009",
+      "timestamp": "2025-12-30T15:32:40.009Z",
+      "question": {
+        "question": "What is the primary purpose of the 'shebang' line in a Linux shell script?",
+        "options": [
+          "To specify the shell interpreter for the script",
+          "To define environment variables",
+          "To execute a specific command",
+          "To redirect output to a file"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The shebang line, typically starting with '#!', is used to specify the interpreter that should be used to run the script, such as /bin/bash or /bin/sh. This allows the script to be executed directly without needing to invoke the interpreter manually. The other options are incorrect because they describe different purposes: defining environment variables is done using the 'export' command, executing a specific command is done using the command itself, and redirecting output to a file is done using the '>' symbol.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The shebang line, typically starting with '#!', is used to specify the interpreter that should be used to run the script, such as /bin/bash or /bin/sh. This allows the script to be executed directly without needing to invoke the interpreter manually. The other options are incorrect because they describe different purposes: defining environment variables is done using the 'export' command, executing a specific command is done using the command itself, and redirecting output to a file is done using the '>' symbol."
+      }
+    },
+    {
+      "id": "1767108740096",
+      "timestamp": "2025-12-30T15:32:20.096Z",
+      "question": {
+        "question": "What is the primary function of the 'shebang' line in a Linux shell script?",
+        "options": [
+          "To specify the shell interpreter to use for the script",
+          "To define the script's variables and functions",
+          "To execute the script in debug mode",
+          "To specify the script's output file"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The shebang line, typically '#!/bin/bash', is used to specify the shell interpreter that should be used to run the script. This line is read by the Linux kernel and tells it which interpreter to use to execute the script. The other options are incorrect because they do not accurately describe the function of the shebang line. Defining variables and functions is done within the script itself, executing in debug mode is typically done using a flag or option when running the script, and specifying an output file is typically done using redirection operators.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The shebang line, typically '#!/bin/bash', is used to specify the shell interpreter that should be used to run the script. This line is read by the Linux kernel and tells it which interpreter to use to execute the script. The other options are incorrect because they do not accurately describe the function of the shebang line. Defining variables and functions is done within the script itself, executing in debug mode is typically done using a flag or option when running the script, and specifying an output file is typically done using redirection operators."
+      }
+    },
+    {
+      "id": "1767108728969",
+      "timestamp": "2025-12-30T15:32:08.969Z",
+      "question": {
+        "question": "What is the primary purpose of the 'shebang' line in a Linux shell script?",
+        "options": [
+          "To specify the shell interpreter to use for the script",
+          "To define the script's variables and functions",
+          "To execute the script with elevated privileges",
+          "To redirect the script's output to a file"
+        ],
+        "correctAnswer": 0,
+        "explanation": "The 'shebang' line, typically starting with '#!', is used to specify the interpreter that should be used to run the script. This allows the script to be executed directly, without needing to invoke the interpreter manually. The other options are incorrect because the 'shebang' line is not used for defining variables and functions, executing with elevated privileges, or redirecting output to a file.",
+        "type": "mcq",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "0",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! The 'shebang' line, typically starting with '#!', is used to specify the interpreter that should be used to run the script. This allows the script to be executed directly, without needing to invoke the interpreter manually. The other options are incorrect because the 'shebang' line is not used for defining variables and functions, executing with elevated privileges, or redirecting output to a file."
+      }
+    },
+    {
+      "id": "1767102059109",
+      "timestamp": "2025-12-30T13:40:59.109Z",
+      "question": {
+        "question": "When setting up a Linux environment for full stack development, it is essential to have a good understanding of _____ to effectively manage and automate tasks, such as setting up servers, configuring databases, and deploying applications.",
+        "correctAnswer": "shell scripting fundamentals",
+        "acceptableAnswers": [
+          "shell scripting",
+          "shell scripting fundamentals",
+          "scripting fundamentals"
+        ],
+        "explanation": "Understanding shell scripting fundamentals is crucial in a Linux environment for full stack development as it enables developers to write scripts that automate repetitive tasks, interact with the operating system, and manage deployments. This knowledge allows developers to streamline their workflow, reduce errors, and increase productivity.",
+        "type": "fillblank",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "[SKIPPED]",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Question skipped."
+      }
+    },
+    {
+      "id": "1767102029070",
+      "timestamp": "2025-12-30T13:40:29.070Z",
+      "question": {
+        "question": "Explain the concept of Shell Scripting in your own words.",
+        "keyPoints": [
+          "Definition and purpose of shell scripting",
+          "Basic syntax and components of a shell script",
+          "Use cases and applications in Linux and full stack development"
+        ],
+        "sampleAnswer": "Shell scripting refers to the process of writing a series of commands in a file that can be executed by the shell to perform a specific task. It involves defining variables, using control structures, and executing commands in a sequence to automate tasks, simplify workflows, and increase productivity. Shell scripts can be used to automate system administration tasks, such as backups, user management, and software updates, as well as to build and deploy full stack applications. Understanding shell scripting is essential for any Linux user or developer, as it provides a powerful tool for automating tasks and streamlining workflows.",
+        "explanation": "Understanding shell scripting is crucial for learners because it provides a fundamental skill for working with Linux systems and automating tasks. Shell scripts can be used to simplify complex tasks, reduce errors, and increase efficiency, making them an essential tool for system administrators, developers, and power users. By grasping the basics of shell scripting, learners can unlock the full potential of Linux and apply their knowledge to a wide range of applications, from system administration to full stack development.",
+        "type": "concept",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "[SKIPPED]",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Question skipped."
+      }
+    },
+    {
+      "id": "1767093938610",
+      "timestamp": "2025-12-30T11:25:38.610Z",
+      "question": {
+        "question": "Explain the concept of Shell Scripting in your own words.",
+        "keyPoints": [
+          "Definition and purpose of shell scripting",
+          "Basic syntax and structure of shell scripts",
+          "Use of variables, conditionals, and loops in shell scripting"
+        ],
+        "sampleAnswer": "Shell scripting refers to the process of writing a series of commands that are executed by the shell in a specific order. It allows users to automate repetitive tasks, simplify complex workflows, and interact with the operating system in a more efficient way. A basic shell script typically starts with a shebang line, followed by a series of commands, and can include variables, conditionals, and loops to control the flow of execution. Understanding shell scripting is essential for automating system administration tasks, deploying software applications, and streamlining development workflows.",
+        "explanation": "Understanding shell scripting is crucial in Linux fundamentals as it enables users to automate tasks, reduce manual errors, and increase productivity. It is also a fundamental skill for full stack development, as it allows developers to deploy and manage applications efficiently. By grasping the basics of shell scripting, learners can unlock a wide range of possibilities for automating and optimizing their workflow, making it an essential concept to master in the realm of Linux and full stack development.",
+        "type": "concept",
+        "topicId": "environment-setup-linux-fundamentals",
+        "topicName": "Environment Setup & Linux Fundamentals",
+        "courseId": "devops",
+        "courseName": "Revature Fullstack"
+      },
+      "userAnswer": "it is programming language to work with operating system and files, especially in unix operating system",
+      "result": {
+        "score": 40,
+        "isCorrect": false,
+        "feedback": "The user's answer is brief and lacks detail, but it does mention that shell scripting is a programming language for working with operating systems and files, which is a good start. However, it does not cover the key points of shell scripting, such as its purpose, basic syntax and structure, use of variables, conditionals, and loops. The user also only mentions Unix operating system, without explaining the broader applications of shell scripting.",
+        "strengths": [
+          "Mention of shell scripting as a programming language for working with operating systems and files"
+        ],
+        "missingPoints": [
+          "Definition and purpose of shell scripting",
+          "Basic syntax and structure of shell scripts",
+          "Use of variables, conditionals, and loops in shell scripting"
+        ]
+      }
+    },
+    {
+      "id": "1767092118445",
+      "timestamp": "2025-12-30T10:55:18.445Z",
+      "question": {
+        "question": "When working with feature branches in a Git repository, using the command _____ allows developers to integrate changes from the main branch into their feature branch, ensuring their code is up-to-date before merging it back into the main branch.",
+        "correctAnswer": "git merge",
+        "acceptableAnswers": [
+          "git merge",
+          "git rebase"
+        ],
+        "explanation": "This answer is correct because git merge is used to integrate changes from one branch into another. In the context of feature branches, this command is crucial for keeping the feature branch updated with the latest changes from the main branch, resolving any conflicts that may arise before the feature branch is merged back into the main branch. Git rebase is an alternative that can also be used for this purpose, though it rewrites the commit history, which might not always be desirable in a collaborative environment.",
+        "type": "fillblank",
+        "topicId": "git",
+        "topicName": "Git & DevOps",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "pull",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Incorrect. The correct answer was: \"git merge\". This answer is correct because git merge is used to integrate changes from one branch into another. In the context of feature branches, this command is crucial for keeping the feature branch updated with the latest changes from the main branch, resolving any conflicts that may arise before the feature branch is merged back into the main branch. Git rebase is an alternative that can also be used for this purpose, though it rewrites the commit history, which might not always be desirable in a collaborative environment."
+      }
+    },
+    {
+      "id": "1767091122536",
+      "timestamp": "2025-12-30T10:38:42.536Z",
+      "question": {
+        "question": "In React, using the useState hook with an initial value that is an object will automatically trigger a re-render of the component whenever any property of that object changes.",
+        "correctAnswer": false,
+        "explanation": "When using the useState hook with an initial value that is an object, React only checks for reference changes, not deep equality. This means that if any property of the object changes, but the object reference itself remains the same (e.g., when using the spread operator or Object.assign), React will not automatically trigger a re-render. To achieve this, you would need to update the state with a new object reference, or use a library that provides deep equality checking.",
+        "type": "truefalse",
+        "topicId": "react",
+        "topicName": "React",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "true",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Incorrect. The statement is FALSE. When using the useState hook with an initial value that is an object, React only checks for reference changes, not deep equality. This means that if any property of the object changes, but the object reference itself remains the same (e.g., when using the spread operator or Object.assign), React will not automatically trigger a re-render. To achieve this, you would need to update the state with a new object reference, or use a library that provides deep equality checking."
+      }
+    },
+    {
+      "id": "1767091087422",
+      "timestamp": "2025-12-30T10:38:07.422Z",
+      "question": {
+        "question": "When using React Hooks, the useState hook can only be used at the top level of a functional component, and not inside any nested functions or conditional statements.",
+        "correctAnswer": true,
+        "explanation": "This is because React relies on the order in which Hooks are called to manage state and side effects. If a Hook is called conditionally or inside a nested function, React cannot guarantee the order of Hook calls, leading to potential bugs and inconsistencies. By restricting Hook calls to the top level of a functional component, React ensures that the order of Hook calls remains consistent across re-renders.",
+        "type": "truefalse",
+        "topicId": "react",
+        "topicName": "React",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "true",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! This is because React relies on the order in which Hooks are called to manage state and side effects. If a Hook is called conditionally or inside a nested function, React cannot guarantee the order of Hook calls, leading to potential bugs and inconsistencies. By restricting Hook calls to the top level of a functional component, React ensures that the order of Hook calls remains consistent across re-renders."
+      }
+    },
+    {
+      "id": "1767090659121",
+      "timestamp": "2025-12-30T10:30:59.121Z",
+      "question": {
+        "question": "In a relational database, using an index on a column that is frequently updated can actually decrease the performance of write operations.",
+        "correctAnswer": true,
+        "explanation": "This is because when an index is created on a column, the database must update the index whenever the column is updated. If the column is frequently updated, this can lead to a significant amount of additional work for the database, potentially slowing down write operations. This is a trade-off that database designers must consider when deciding whether to create an index on a particular column.",
+        "type": "truefalse",
+        "topicId": "databases",
+        "topicName": "Databases",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "true",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! This is because when an index is created on a column, the database must update the index whenever the column is updated. If the column is frequently updated, this can lead to a significant amount of additional work for the database, potentially slowing down write operations. This is a trade-off that database designers must consider when deciding whether to create an index on a particular column."
+      }
+    },
+    {
+      "id": "1767090617529",
+      "timestamp": "2025-12-30T10:30:17.529Z",
+      "question": {
+        "question": "Explain the concept of database normalization in your own words.",
+        "keyPoints": [
+          "Removing data redundancy",
+          "Improving data integrity",
+          "Reducing data anomalies"
+        ],
+        "sampleAnswer": "Database normalization is the process of organizing the data in a database to minimize data redundancy and dependency. It involves dividing large tables into smaller tables and linking them through relationships, which helps to improve data integrity and reduce data anomalies. Normalization also helps to eliminate data inconsistencies and improve the scalability of the database.",
+        "explanation": "Understanding database normalization is important because it helps to improve the overall design and performance of a database. A well-normalized database is more efficient, scalable, and easier to maintain, which is essential for supporting large and complex applications. Normalization also helps to reduce data inconsistencies and improve data integrity, which is critical for ensuring the accuracy and reliability of the data.",
+        "type": "concept",
+        "topicId": "databases",
+        "topicName": "Databases",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "normalization is done to reduce redundancy in tables",
+      "result": {
+        "score": 60,
+        "isCorrect": true,
+        "feedback": "The user correctly identified that normalization is done to reduce redundancy in tables, which is a key aspect of database normalization. However, the explanation is brief and lacks detail on other important aspects such as improving data integrity and reducing data anomalies.",
+        "strengths": [
+          "Removing data redundancy"
+        ],
+        "missingPoints": [
+          "Improving data integrity",
+          "Reducing data anomalies"
+        ]
+      }
+    },
+    {
+      "id": "1767090571874",
+      "timestamp": "2025-12-30T10:29:31.874Z",
+      "question": {
+        "question": "What is the primary purpose of using indexes in a relational database management system like MySQL?",
+        "options": [
+          "To improve data security by encrypting sensitive information",
+          "To enhance data integrity by enforcing constraints",
+          "To speed up query execution by providing quick access to data",
+          "To reduce storage requirements by compressing data"
+        ],
+        "correctAnswer": 2,
+        "explanation": "Indexes are used to improve the speed of data retrieval by providing a quick way to locate specific data. They do this by creating a data structure that allows the database to quickly locate and retrieve the required data, thereby reducing the time it takes to execute a query. The other options are incorrect because indexes are not primarily used for data security, data integrity, or reducing storage requirements.",
+        "type": "mcq",
+        "topicId": "databases",
+        "topicName": "Databases",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "2",
+      "result": {
+        "score": 100,
+        "isCorrect": true,
+        "feedback": "Correct! Indexes are used to improve the speed of data retrieval by providing a quick way to locate specific data. They do this by creating a data structure that allows the database to quickly locate and retrieve the required data, thereby reducing the time it takes to execute a query. The other options are incorrect because indexes are not primarily used for data security, data integrity, or reducing storage requirements."
+      }
+    },
+    {
+      "id": "1767090516872",
+      "timestamp": "2025-12-30T10:28:36.872Z",
+      "question": {
+        "question": "Explain the concept of database normalization in your own words.",
+        "keyPoints": [
+          "Eliminating data redundancy",
+          "Minimizing data dependency",
+          "Improving data integrity",
+          "Reducing data anomalies"
+        ],
+        "sampleAnswer": "Database normalization is the process of organizing the data in a database to minimize data redundancy and dependency. This is achieved by splitting large tables into smaller ones, while linking them through relationships. Normalization helps eliminate data inconsistencies, improves data integrity, and reduces data anomalies, making it easier to maintain and scale the database.",
+        "explanation": "Understanding database normalization is crucial because it helps learners design and implement databases that are efficient, scalable, and easy to maintain. A well-normalized database reduces the risk of data inconsistencies and anomalies, ensuring that the data remains accurate and reliable. This concept is essential for learners to grasp, as it is a fundamental aspect of database design and a key factor in ensuring the overall performance and reliability of a database system.",
+        "type": "concept",
+        "topicId": "databases",
+        "topicName": "Databases",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "it is the process of breaking down a table with likely redundant values",
+      "result": {
+        "score": 40,
+        "isCorrect": false,
+        "feedback": "The user's answer is a good start, but it lacks detail and clarity on the concept of database normalization. The answer only mentions breaking down a table with redundant values, but does not elaborate on the benefits of normalization, such as improving data integrity, reducing data anomalies, and minimizing data dependency.",
+        "strengths": [
+          "Mentioned the idea of breaking down a table with redundant values"
+        ],
+        "missingPoints": [
+          "Eliminating data redundancy",
+          "Minimizing data dependency",
+          "Improving data integrity",
+          "Reducing data anomalies"
+        ]
+      }
+    },
+    {
+      "id": "1767090433785",
+      "timestamp": "2025-12-30T10:27:13.785Z",
+      "question": {
+        "question": "In a database, creating an index on a column used in the WHERE clause of a query will always improve the query's performance.",
+        "correctAnswer": false,
+        "explanation": "While creating an index on a column used in the WHERE clause can significantly improve query performance by allowing the database to quickly locate the required data, it is not always the case. The effectiveness of an index depends on various factors, such as the distribution of data in the column, the type of query, and the database management system being used. For example, if the column has a very low cardinality (i.e., few unique values), the index may not provide much benefit, and the database may even choose to ignore it. Additionally, index creation and maintenance can also incur overhead, so it's essential to carefully evaluate the trade-offs before creating an index.",
+        "type": "truefalse",
+        "topicId": "databases",
+        "topicName": "Databases",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "true",
+      "result": {
+        "score": 0,
+        "isCorrect": false,
+        "feedback": "Incorrect. The statement is FALSE. While creating an index on a column used in the WHERE clause can significantly improve query performance by allowing the database to quickly locate the required data, it is not always the case. The effectiveness of an index depends on various factors, such as the distribution of data in the column, the type of query, and the database management system being used. For example, if the column has a very low cardinality (i.e., few unique values), the index may not provide much benefit, and the database may even choose to ignore it. Additionally, index creation and maintenance can also incur overhead, so it's essential to carefully evaluate the trade-offs before creating an index."
+      }
+    },
+    {
+      "id": "1767089909178",
+      "timestamp": "2025-12-30T10:18:29.178Z",
+      "question": {
+        "question": "Compare and contrast Async/Await and Promises.",
+        "item1": "Async/Await",
+        "item2": "Promises",
+        "keyDifferences": [
+          "Syntax and readability",
+          "Error handling approach",
+          "Debugging complexity"
+        ],
+        "keySimilarities": [
+          "Used for asynchronous operations",
+          "Both handle non-blocking I/O"
+        ],
+        "sampleAnswer": "A comprehensive comparison covering key differences and similarities, including how Async/Await is built on top of Promises, providing a more readable and maintainable syntax.",
+        "explanation": "Understanding the comparison between Async/Await and Promises is crucial for effective use of asynchronous programming in JavaScript, as it impacts code readability, error handling, and overall application performance.",
+        "type": "comparison",
+        "topicId": "javascript",
+        "topicName": "JavaScript",
+        "courseId": "fullstack-web-dev",
+        "courseName": "Full Stack Web Development"
+      },
+      "userAnswer": "async/await executes only once",
+      "result": {
+        "score": 20,
+        "isCorrect": false,
+        "feedback": "The user's answer lacks a comprehensive comparison of Async/Await and Promises, failing to address key differences and similarities.",
+        "strengths": [],
+        "missingPoints": [
+          "Syntax and readability differences",
+          "Error handling approaches",
+          "Debugging complexity",
+          "Non-blocking I/O handling",
+          "Relationship between Async/Await and Promises"
+        ]
+      }
+    }
+  ]
+}

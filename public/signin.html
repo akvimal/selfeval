@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - SelfEval</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="/">SelfEval</a>
+    </div>
+  </nav>
+
+  <main class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+          <div class="card-body p-4">
+            <h2 class="text-center mb-4">Sign In</h2>
+
+            <div id="pending-approval" class="alert alert-warning d-none" role="alert">
+              <strong>Account Pending Approval</strong>
+              <p class="mb-0 mt-1">Your account has been created successfully. An administrator needs to enable your account before you can sign in.</p>
+            </div>
+
+            <div id="error-alert" class="alert alert-danger d-none" role="alert"></div>
+
+            <form id="signin-form">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required autocomplete="email">
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required autocomplete="current-password">
+              </div>
+
+              <div class="mb-3 text-end">
+                <a href="/forgot-password" class="text-decoration-none small">Forgot password?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" id="submit-btn">
+                Sign In
+              </button>
+            </form>
+
+            <div id="verification-required" class="d-none">
+              <div class="alert alert-warning">
+                <h6 class="alert-heading">Email Verification Required</h6>
+                <p class="mb-2">Please verify your email before signing in.</p>
+                <button class="btn btn-sm btn-outline-warning" id="resend-verification-btn">
+                  Resend Verification Email
+                </button>
+              </div>
+              <div id="resend-message"></div>
+            </div>
+
+            <hr class="my-4">
+
+            <p class="text-center text-muted mb-0">
+              Don't have an account? <a href="/signup">Sign Up</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let pendingVerificationEmail = null;
+
+    // Check for pending approval message
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('pending') === 'approval') {
+      document.getElementById('pending-approval').classList.remove('d-none');
+      // Clean up URL
+      window.history.replaceState({}, document.title, '/signin');
+    }
+
+    // Check if already logged in
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          window.location.href = '/';
+        }
+      } catch (e) {}
+    }
+    checkAuth();
+
+    document.getElementById('signin-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const submitBtn = document.getElementById('submit-btn');
+      const errorAlert = document.getElementById('error-alert');
+      const verificationDiv = document.getElementById('verification-required');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+      errorAlert.classList.add('d-none');
+      verificationDiv.classList.add('d-none');
+
+      try {
+        const res = await fetch('/api/auth/signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Check if verification is required
+          if (data.requiresVerification) {
+            pendingVerificationEmail = data.email || email;
+            verificationDiv.classList.remove('d-none');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Sign In';
+            return;
+          }
+          throw new Error(data.error || 'Sign in failed');
+        }
+
+        // Redirect to home
+        window.location.href = '/';
+      } catch (error) {
+        errorAlert.textContent = error.message;
+        errorAlert.classList.remove('d-none');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('resend-verification-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('resend-verification-btn');
+      const messageDiv = document.getElementById('resend-message');
+      const email = pendingVerificationEmail || document.getElementById('email').value;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      messageDiv.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/auth/resend-verification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          messageDiv.innerHTML = '<div class="alert alert-success mt-2">Verification email sent! Check your inbox.</div>';
+        } else {
+          messageDiv.innerHTML = '<div class="alert alert-danger mt-2">' + (data.error || 'Failed to send') + '</div>';
+        }
+      } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger mt-2">Network error</div>';
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Resend Verification Email';
+    });
+  </script>
+</body>
+</html>

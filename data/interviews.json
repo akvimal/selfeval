@@ -1,0 +1,996 @@
+{
+  "sessions": [
+    {
+      "id": "int_1767111665853_1zo5z4kij",
+      "courseId": "devops",
+      "courseName": "Revature Fullstack",
+      "selectedTopics": "random",
+      "topics": [
+        {
+          "name": "Environment Setup & Linux Fundamentals",
+          "description": "Foundation for development environment and Linux operating system basics",
+          "subtopics": [
+            "Introduction to Linux OS",
+            "Basic Linux Commands",
+            "Shell Scripting Fundamentals",
+            "Full Stack Development Overview"
+          ],
+          "id": "environment-setup-linux-fundamentals"
+        },
+        {
+          "name": "Version Control Systems (Git)",
+          "description": "Source code management and collaborative development using Git",
+          "subtopics": [
+            "Version Control Concepts (VCS, CVCS, DVCS)",
+            "Git Fundamentals",
+            "Git Installation and Configuration",
+            "Basic Git Commands",
+            "Git Branching and Merging",
+            "Remote Repositories",
+            "Pull Requests",
+            "Gitignore"
+          ],
+          "id": "version-control-systems-git-"
+        },
+        {
+          "name": "HTTP Protocol & Web Fundamentals",
+          "description": "Understanding HTTP protocol, web communication, and client-server architecture",
+          "subtopics": [
+            "Introduction to HTTP",
+            "HTTP Methods",
+            "HTTP Lifecycle",
+            "HTTP Status Codes",
+            "HTTP Headers",
+            "HTTP Cookies"
+          ],
+          "id": "http-protocol-web-fundamentals"
+        },
+        {
+          "name": "HTML & Web Markup",
+          "description": "HTML fundamentals and semantic markup for web development",
+          "subtopics": [
+            "HTML Overview and History",
+            "HTML5 Features and Semantics",
+            "DOM (Document Object Model)",
+            "HTML Tags and Elements",
+            "Element Attributes",
+            "Inline vs Block Elements",
+            "HTML Forms",
+            "Form Elements (Input, Label, Textarea, Select, Option)",
+            "Form Attributes (action, method)",
+            "Input Types",
+            "HTML5 Form Validation",
+            "GET vs POST Methods",
+            "Web Storage (localStorage, sessionStorage)",
+            "WebSQL Database",
+            "Geolocation API"
+          ],
+          "id": "html-web-markup"
+        },
+        {
+          "name": "CSS & Styling",
+          "description": "Cascading Style Sheets for styling and layout design",
+          "subtopics": [
+            "Introduction to CSS3",
+            "CSS Syntax and Structure",
+            "Methods to Apply CSS (Inline, Internal, External)",
+            "CSS Selectors",
+            "Text and Font Styling",
+            "Font Properties",
+            "Box Model (Content, Padding, Border, Margin)",
+            "Colors and Backgrounds",
+            "Borders and Effects",
+            "Layout Techniques",
+            "Display Property",
+            "Position Property",
+            "Float Property",
+            "Transitions and Animations",
+            "Advanced CSS Features"
+          ],
+          "id": "css-styling"
+        },
+        {
+          "name": "Responsive Web Design & Layouts",
+          "description": "Modern layout techniques and responsive design principles",
+          "subtopics": [
+            "Flexbox Layout",
+            "Flex Direction",
+            "Justify Content and Alignment",
+            "CSS Grid Layout",
+            "Grid Template",
+            "Grid Columns and Rows",
+            "Media Queries",
+            "Breakpoints",
+            "Mobile First Approach",
+            "Responsive Design Principles"
+          ],
+          "id": "responsive-web-design-layouts"
+        },
+        {
+          "name": "JavaScript Fundamentals",
+          "description": "Core JavaScript language concepts and programming basics",
+          "subtopics": [
+            "Getting Started with JavaScript",
+            "JavaScript Fundamentals",
+            "Variables and Data Types",
+            "Operators",
+            "Control Flow (if/else, loops)",
+            "Functions",
+            "Scope and Hoisting",
+            "Arrays and Array Methods",
+            "forEach Method",
+            "Map Method",
+            "Filter Method",
+            "Reduce Method",
+            "Objects and Prototypes",
+            "ES6+ Features"
+          ],
+          "id": "javascript-fundamentals"
+        },
+        {
+          "name": "Asynchronous JavaScript & Advanced Concepts",
+          "description": "Advanced JavaScript patterns and asynchronous programming",
+          "subtopics": [
+            "Synchronous vs Asynchronous Programming",
+            "Call Stack",
+            "Callbacks",
+            "Promises",
+            "Async/Await",
+            "Error Handling in Async Code",
+            "Event Loop",
+            "Microtasks and Macrotasks",
+            "Timing Functions (setTimeout, setInterval)"
+          ],
+          "id": "asynchronous-javascript-advanced-concepts"
+        },
+        {
+          "name": "Bootstrap Framework",
+          "description": "Bootstrap CSS framework for responsive and component-based design",
+          "subtopics": [
+            "Introduction to Bootstrap 5",
+            "Bootstrap Setup and Installation",
+            "Bootstrap via CDN",
+            "Bootstrap Grid System",
+            "Bootstrap Components",
+            "Bootstrap Utilities and Helpers",
+            "Responsive Design with Bootstrap",
+            "Bootstrap Customization",
+            "Bootstrap Typography",
+            "Forms in Bootstrap",
+            "Navigation Components"
+          ],
+          "id": "bootstrap-framework"
+        },
+        {
+          "name": "Agile Methodology & Project Management",
+          "description": "Agile development practices and team collaboration",
+          "subtopics": [
+            "Introduction to Agile",
+            "Agile Principles and Manifesto",
+            "Agile Process",
+            "Scrum Framework",
+            "Scrum Roles (Product Owner, Scrum Master, Development Team)",
+            "Scrum Artifacts (Product Backlog, Sprint Backlog, Increment)",
+            "Scrum Ceremonies (Sprint Planning, Daily Standup, Sprint Review, Sprint Retrospective)",
+            "User Stories",
+            "Agile Estimation and Planning",
+            "Story Points",
+            "Planning Poker",
+            "Velocity Tracking",
+            "Burndown Charts",
+            "Burnup Charts",
+            "Project Boards and Tools",
+            "Agile Tools and Software"
+          ],
+          "id": "agile-methodology-project-management"
+        },
+        {
+          "name": "Angular Framework Fundamentals",
+          "description": "Angular framework for building dynamic web applications",
+          "subtopics": [
+            "Introduction to Angular",
+            "Angular Architecture",
+            "Components",
+            "Templates and Bindings",
+            "Directives",
+            "Services and Dependency Injection",
+            "Routing",
+            "Forms (Template-driven and Reactive)",
+            "HTTP Client and API Integration",
+            "RxJS Observables",
+            "Angular CLI",
+            "Module System",
+            "Pipes and Filters"
+          ],
+          "id": "angular-framework-fundamentals"
+        },
+        {
+          "name": "Backend Development with Spring Boot",
+          "description": "Java Spring Boot framework for building enterprise applications",
+          "subtopics": [
+            "Introduction to Spring Framework",
+            "Spring Boot Basics",
+            "Spring Boot Setup and Configuration",
+            "Spring Beans and Dependency Injection",
+            "Spring MVC",
+            "RESTful API Development",
+            "Spring Data JPA",
+            "Database Integration",
+            "Transaction Management",
+            "Exception Handling",
+            "Spring Security",
+            "Application Properties Configuration"
+          ],
+          "id": "backend-development-with-spring-boot"
+        },
+        {
+          "name": "Database Management",
+          "description": "Relational database concepts and MySQL implementation",
+          "subtopics": [
+            "Database Fundamentals",
+            "RDBMS Concepts",
+            "MySQL Database",
+            "SQL Syntax and Queries",
+            "CREATE, READ, UPDATE, DELETE Operations",
+            "Joins and Relationships",
+            "Indexes and Query Optimization",
+            "Transactions and ACID Properties",
+            "Stored Procedures",
+            "Database Design and Normalization",
+            "WebSQL and Client-side Storage"
+          ],
+          "id": "database-management"
+        },
+        {
+          "name": "Containerization & Deployment",
+          "description": "Docker containers and cloud deployment practices",
+          "subtopics": [
+            "Introduction to Docker",
+            "Docker Images and Containers",
+            "Dockerfile Creation",
+            "Docker Compose",
+            "Container Orchestration",
+            "Kubernetes Basics",
+            "GCP (Google Cloud Platform)",
+            "Cloud Deployment Practices",
+            "CI/CD Pipelines",
+            "Monitoring and Logging"
+          ],
+          "id": "containerization-deployment"
+        }
+      ],
+      "persona": {
+        "id": "technical-lead",
+        "name": "Technical Lead",
+        "style": "analytical",
+        "focusAreas": [
+          "architecture",
+          "system-design",
+          "code-quality",
+          "technical-decisions",
+          "trade-offs"
+        ],
+        "evaluationWeight": {
+          "technical": 0.7,
+          "communication": 0.15,
+          "problemSolving": 0.15
+        }
+      },
+      "targetRole": {
+        "id": "junior",
+        "name": "Junior Developer",
+        "level": 1,
+        "type": "generic",
+        "expectations": {
+          "technicalDepth": "foundational",
+          "independence": "guided",
+          "complexity": "simple"
+        }
+      },
+      "difficultyTracker": {
+        "currentLevel": 1,
+        "recentAssessments": [
+          "partial",
+          "partial",
+          "partial"
+        ],
+        "adjustmentHistory": []
+      },
+      "metrics": {
+        "questionCount": 1,
+        "skippedCount": 0,
+        "duration": {
+          "minutes": 5,
+          "seconds": 3,
+          "formatted": "5:03"
+        }
+      },
+      "startTime": "2025-12-30T16:21:05.853Z",
+      "endTime": "2025-12-30T16:26:10.281Z",
+      "messages": [
+        {
+          "role": "interviewer",
+          "content": "Hello, I'm excited to explore your technical skills and knowledge today. As we dive into the world of full stack development, let's start with the foundation. Can you walk me through the basic Linux commands you'd use to navigate and manage files in a Linux environment, and explain why understanding these commands is essential for a full stack developer?",
+          "timestamp": "2025-12-30T16:21:06.478Z",
+          "currentTopic": "Linux Fundamentals"
+        },
+        {
+          "role": "user",
+          "content": "pwd - print working directory, cd - change current directory, ls - list directory content, chmod to change file permissions, these commands are used in deployment applications writing shell scripts to automate",
+          "timestamp": "2025-12-30T16:23:23.952Z",
+          "skipped": false
+        },
+        {
+          "role": "interviewer",
+          "content": "That's a good start, you've listed some essential Linux commands. Can you tell me more about how you would use the mkdir command to create a new directory, and how you would handle permissions with the chmod command in a scenario where you're setting up a new project?",
+          "timestamp": "2025-12-30T16:23:24.495Z",
+          "currentTopic": "Linux Fundamentals",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "mkdir <new directory name> the files that are executable are set chmod 777 <executable>",
+          "timestamp": "2025-12-30T16:24:51.107Z",
+          "skipped": false
+        },
+        {
+          "role": "interviewer",
+          "content": "You've provided a basic understanding of using mkdir to create a new directory and chmod to set permissions. However, using chmod 777 for executable files might not always be the best approach due to security considerations. Can you think of a scenario where you would want to set more restrictive permissions, such as when handling sensitive data or scripts that should only be executable by certain users?",
+          "timestamp": "2025-12-30T16:24:51.848Z",
+          "currentTopic": "Linux Fundamentals and File Permissions",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "chmod 344",
+          "timestamp": "2025-12-30T16:25:35.461Z",
+          "skipped": false
+        },
+        {
+          "role": "interviewer",
+          "content": "I appreciate your attempt to provide a permission setting. However, chmod 344 doesn't quite match the typical permission settings we use. Usually, we use permissions like 644 for files and 755 for directories. Can you explain what the numbers in a chmod command represent and how you would decide on the appropriate permission settings for a file or directory in a project, especially considering security and access control?",
+          "timestamp": "2025-12-30T16:25:36.197Z",
+          "currentTopic": "Linux Fundamentals",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        }
+      ],
+      "summary": {
+        "score": 60,
+        "overallFeedback": "The candidate demonstrated a basic understanding of Linux commands, including navigation and file management. However, their knowledge of permission settings and security considerations was limited, and they struggled to provide appropriate chmod commands. The candidate showed some ability to communicate their thoughts, but their explanations were often brief and lacking in detail.",
+        "topicsCovered": [
+          "Linux Commands",
+          "File Management",
+          "Permission Settings"
+        ],
+        "strengths": [
+          "Familiarity with basic Linux commands",
+          "Ability to recognize the importance of understanding Linux commands for full stack development"
+        ],
+        "areasToImprove": [
+          "Understanding of permission settings and security considerations",
+          "Ability to provide detailed explanations of technical concepts",
+          "Knowledge of best practices for setting permissions"
+        ],
+        "recommendedNextSteps": "The candidate should focus on studying and practicing Linux commands, particularly chmod and permission settings, and work on developing their ability to explain technical concepts in detail. They should also explore security considerations and best practices for full stack development.",
+        "roleFitScore": 50,
+        "roleFitFeedback": "The candidate's limited knowledge of Linux commands and permission settings, as well as their struggles with communication, raise concerns about their fit for the Junior Developer role. However, their basic understanding of Linux commands and recognition of their importance for full stack development suggest that they may have potential with further training and practice.",
+        "difficultyProgression": "The candidate did not demonstrate significant growth or improvement as the interview progressed, and the difficulty level remained consistent throughout. They may benefit from additional practice and experience with increasingly complex technical concepts.",
+        "persona": {
+          "id": "technical-lead",
+          "name": "Technical Lead",
+          "style": "analytical",
+          "focusAreas": [
+            "architecture",
+            "system-design",
+            "code-quality",
+            "technical-decisions",
+            "trade-offs"
+          ],
+          "evaluationWeight": {
+            "technical": 0.7,
+            "communication": 0.15,
+            "problemSolving": 0.15
+          }
+        },
+        "targetRole": {
+          "id": "junior",
+          "name": "Junior Developer",
+          "level": 1,
+          "type": "generic",
+          "expectations": {
+            "technicalDepth": "foundational",
+            "independence": "guided",
+            "complexity": "simple"
+          }
+        },
+        "difficultyTracker": {
+          "currentLevel": 1,
+          "recentAssessments": [
+            "partial",
+            "partial",
+            "partial"
+          ],
+          "adjustmentHistory": []
+        },
+        "metrics": {
+          "questionCount": 1,
+          "skippedCount": 0,
+          "duration": {
+            "minutes": 5,
+            "seconds": 3,
+            "formatted": "5:03"
+          }
+        }
+      }
+    },
+    {
+      "id": "int_1767092127577_6orj6zkoe",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "selectedTopics": "random",
+      "topics": [
+        {
+          "id": "html-css",
+          "name": "HTML & CSS",
+          "description": "Web markup and styling fundamentals",
+          "subtopics": [
+            "HTML Elements",
+            "Forms & Inputs",
+            "Semantic HTML",
+            "CSS Selectors",
+            "Flexbox",
+            "Grid Layout",
+            "Responsive Design",
+            "CSS Variables"
+          ]
+        },
+        {
+          "id": "javascript",
+          "name": "JavaScript",
+          "description": "Core JavaScript programming",
+          "subtopics": [
+            "Variables & Data Types",
+            "Functions",
+            "Arrays",
+            "Objects",
+            "DOM Manipulation",
+            "Events",
+            "Promises & Async/Await",
+            "ES6+ Features",
+            "Error Handling"
+          ]
+        },
+        {
+          "id": "react",
+          "name": "React",
+          "description": "Frontend framework for building UIs",
+          "subtopics": [
+            "Components",
+            "Props & State",
+            "Hooks",
+            "Context API",
+            "React Router",
+            "Forms in React",
+            "Performance Optimization"
+          ]
+        },
+        {
+          "id": "nodejs",
+          "name": "Node.js",
+          "description": "Server-side JavaScript runtime",
+          "subtopics": [
+            "Node Basics",
+            "NPM",
+            "File System",
+            "HTTP Module",
+            "Express.js",
+            "Middleware",
+            "REST APIs",
+            "Authentication"
+          ]
+        },
+        {
+          "id": "databases",
+          "name": "Databases",
+          "description": "Data storage and retrieval",
+          "subtopics": [
+            "SQL Basics",
+            "Joins",
+            "Indexes",
+            "MongoDB",
+            "Mongoose",
+            "Database Design",
+            "Transactions"
+          ]
+        },
+        {
+          "id": "git",
+          "name": "Git & DevOps",
+          "description": "Version control and deployment",
+          "subtopics": [
+            "Git Commands",
+            "Branching",
+            "Merging",
+            "GitHub",
+            "CI/CD Basics",
+            "Docker Basics"
+          ]
+        }
+      ],
+      "persona": null,
+      "targetRole": null,
+      "difficultyTracker": {
+        "currentLevel": 2,
+        "recentAssessments": [],
+        "adjustmentHistory": []
+      },
+      "metrics": {
+        "questionCount": 1,
+        "skippedCount": 1,
+        "duration": {
+          "minutes": 0,
+          "seconds": 51,
+          "formatted": "0:51"
+        }
+      },
+      "startTime": "2025-12-30T10:55:27.577Z",
+      "endTime": "2025-12-30T10:56:19.769Z",
+      "messages": [
+        {
+          "role": "interviewer",
+          "content": "Hello and welcome to our Full Stack Web Development interview. I'm excited to explore your skills and experience with you today. Let's start with HTML and CSS. Can you explain the difference between the 'display: flex' and 'display: grid' properties in CSS, and provide an example of when you would use each?",
+          "timestamp": "2025-12-30T10:55:28.106Z",
+          "currentTopic": "CSS"
+        },
+        {
+          "role": "user",
+          "content": "I'd like to skip this question and move to the next one.",
+          "timestamp": "2025-12-30T10:55:53.621Z",
+          "skipped": true
+        },
+        {
+          "role": "interviewer",
+          "content": "I understand that you'd like to skip this question, but I'd like to encourage you to give it a try. 'display: flex' and 'display: grid' are fundamental properties in CSS. If you're having trouble, I can offer a hint: think about how you would layout items in a row versus a table-like structure. Would you like to take another attempt or would you like a hint to get started?",
+          "timestamp": "2025-12-30T10:55:54.181Z",
+          "currentTopic": "HTML & CSS",
+          "assessmentOfLastAnswer": "brief",
+          "isProbing": true
+        }
+      ],
+      "summary": {
+        "score": 0,
+        "overallFeedback": "The candidate failed to demonstrate any knowledge of HTML and CSS, specifically the difference between 'display: flex' and 'display: grid' properties. They chose to skip the question instead of attempting to answer or asking for a hint, which raises concerns about their problem-solving skills and willingness to learn. As a result, it's challenging to assess their overall performance, but it's clear that they need significant improvement in fundamental web development concepts.",
+        "topicsCovered": [],
+        "strengths": [],
+        "areasToImprove": [
+          "HTML and CSS fundamentals",
+          "Problem-solving skills",
+          "Willingness to learn and adapt"
+        ],
+        "recommendedNextSteps": "The candidate should focus on studying the basics of HTML and CSS, including layout properties like 'display: flex' and 'display: grid'. They should practice building simple web pages and experimenting with different layouts to improve their problem-solving skills and confidence in their abilities.",
+        "roleFitScore": 20,
+        "roleFitFeedback": "The candidate does not appear to be a good fit for the Full Stack Web Development role due to their lack of demonstrated knowledge and skills in fundamental web development concepts.",
+        "difficultyProgression": "No difficulty adjustments were needed as the candidate did not progress beyond the initial question.",
+        "persona": null,
+        "targetRole": null,
+        "difficultyTracker": {
+          "currentLevel": 2,
+          "recentAssessments": [],
+          "adjustmentHistory": []
+        },
+        "metrics": {
+          "questionCount": 1,
+          "skippedCount": 1,
+          "duration": {
+            "minutes": 0,
+            "seconds": 51,
+            "formatted": "0:51"
+          }
+        }
+      }
+    },
+    {
+      "id": "int_1767091153689_esohabbiz",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "selectedTopics": "random",
+      "topics": [
+        {
+          "id": "html-css",
+          "name": "HTML & CSS",
+          "description": "Web markup and styling fundamentals",
+          "subtopics": [
+            "HTML Elements",
+            "Forms & Inputs",
+            "Semantic HTML",
+            "CSS Selectors",
+            "Flexbox",
+            "Grid Layout",
+            "Responsive Design",
+            "CSS Variables"
+          ]
+        },
+        {
+          "id": "javascript",
+          "name": "JavaScript",
+          "description": "Core JavaScript programming",
+          "subtopics": [
+            "Variables & Data Types",
+            "Functions",
+            "Arrays",
+            "Objects",
+            "DOM Manipulation",
+            "Events",
+            "Promises & Async/Await",
+            "ES6+ Features",
+            "Error Handling"
+          ]
+        },
+        {
+          "id": "react",
+          "name": "React",
+          "description": "Frontend framework for building UIs",
+          "subtopics": [
+            "Components",
+            "Props & State",
+            "Hooks",
+            "Context API",
+            "React Router",
+            "Forms in React",
+            "Performance Optimization"
+          ]
+        },
+        {
+          "id": "nodejs",
+          "name": "Node.js",
+          "description": "Server-side JavaScript runtime",
+          "subtopics": [
+            "Node Basics",
+            "NPM",
+            "File System",
+            "HTTP Module",
+            "Express.js",
+            "Middleware",
+            "REST APIs",
+            "Authentication"
+          ]
+        },
+        {
+          "id": "databases",
+          "name": "Databases",
+          "description": "Data storage and retrieval",
+          "subtopics": [
+            "SQL Basics",
+            "Joins",
+            "Indexes",
+            "MongoDB",
+            "Mongoose",
+            "Database Design",
+            "Transactions"
+          ]
+        },
+        {
+          "id": "git",
+          "name": "Git & DevOps",
+          "description": "Version control and deployment",
+          "subtopics": [
+            "Git Commands",
+            "Branching",
+            "Merging",
+            "GitHub",
+            "CI/CD Basics",
+            "Docker Basics"
+          ]
+        }
+      ],
+      "persona": {
+        "id": "hr-behavioral",
+        "name": "HR / Behavioral",
+        "style": "supportive",
+        "focusAreas": [
+          "soft-skills",
+          "culture-fit",
+          "communication",
+          "teamwork",
+          "conflict-resolution"
+        ],
+        "evaluationWeight": {
+          "technical": 0.1,
+          "communication": 0.5,
+          "problemSolving": 0.4
+        }
+      },
+      "targetRole": {
+        "id": "junior",
+        "name": "Junior Developer",
+        "level": 1,
+        "type": "generic",
+        "expectations": {
+          "technicalDepth": "foundational",
+          "independence": "guided",
+          "complexity": "simple"
+        }
+      },
+      "difficultyTracker": {
+        "currentLevel": 1,
+        "recentAssessments": [
+          "partial",
+          "partial",
+          "brief"
+        ],
+        "adjustmentHistory": []
+      },
+      "startTime": "2025-12-30T10:39:13.689Z",
+      "endTime": "2025-12-30T10:47:07.376Z",
+      "messages": [
+        {
+          "role": "interviewer",
+          "content": "Hello, I'm so glad you're here today. I want to make sure you feel comfortable and supported throughout our conversation. We're going to explore your skills and experience in Full Stack Web Development, and I'm excited to learn more about your approach to problem-solving and teamwork. Let's start with something fun - can you tell me about a time when you had to use HTML and CSS to create a simple web page, and how you approached the layout and design of that page?",
+          "timestamp": "2025-12-30T10:39:14.217Z",
+          "currentTopic": "HTML & CSS"
+        },
+        {
+          "role": "user",
+          "content": "I'd like to skip this question and move to the next one.",
+          "timestamp": "2025-12-30T10:39:51.341Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "I completely understand that you might not feel comfortable sharing about a specific experience, and that's okay. However, I'd like to explore your understanding of HTML and CSS in a more general sense. Can you tell me about a basic concept in HTML that you find particularly useful or interesting, and how you would apply it in a simple web development project?",
+          "timestamp": "2025-12-30T10:39:52.277Z",
+          "currentTopic": "HTML & CSS",
+          "assessmentOfLastAnswer": "brief",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "HTML and CSS are the web languages to create web user interface and style them",
+          "timestamp": "2025-12-30T10:40:37.733Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "That's a good start, but I'd love to dive a bit deeper. You mentioned HTML and CSS are used for creating the web user interface and styling. Can you tell me about a specific HTML element, such as a div or a span, and how you would use it in conjunction with CSS to create a simple layout?",
+          "timestamp": "2025-12-30T10:40:38.592Z",
+          "currentTopic": "HTML & CSS",
+          "assessmentOfLastAnswer": "brief",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "div are block level element used heavily to build document structure and components using the css flex and grid constructs",
+          "timestamp": "2025-12-30T10:41:51.377Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "I'm glad you mentioned using div elements with CSS flex and grid constructs to build document structure and components. That's a great foundation for creating responsive layouts. Can you tell me about a time when you had to use JavaScript to add interactivity to a web page, such as responding to user clicks or changes to form inputs?",
+          "timestamp": "2025-12-30T10:41:51.915Z",
+          "currentTopic": "JavaScript Basics",
+          "assessmentOfLastAnswer": "good",
+          "isProbing": false
+        },
+        {
+          "role": "user",
+          "content": "that is to avoid posting the form to backend, instead make the form post without browser refresh",
+          "timestamp": "2025-12-30T10:43:15.976Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "I see you're thinking about using JavaScript to handle form submissions without a full page refresh, which is a great approach to improving user experience. However, I'd love to clarify how you would achieve this. Can you walk me through the steps you would take to prevent the default form submission behavior and instead use JavaScript to send the form data to the server?",
+          "timestamp": "2025-12-30T10:43:16.598Z",
+          "currentTopic": "JavaScript and Form Handling",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "i will call preventEventDefault on the submit event of the form, then call the uri to post the form data to",
+          "timestamp": "2025-12-30T10:44:34.433Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "That's a good start, but I'd love to clarify how you would actually send the form data to the server after preventing the default submission behavior. Can you tell me about the JavaScript method or function you would use to make this request, such as fetch or XMLHttpRequest?",
+          "timestamp": "2025-12-30T10:44:35.169Z",
+          "currentTopic": "JavaScript",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "yes fetch is the webapi available to call the GET, POST or other request types with data, whereas XMLHttpRequest is javascript object to call the remote api",
+          "timestamp": "2025-12-30T10:45:57.878Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "I'm glad you mentioned fetch and XMLHttpRequest as methods for sending requests to the server. That's a good start. Can you tell me how you would handle errors or responses from the server when using fetch, for example, if the server returns a 404 or 500 error?",
+          "timestamp": "2025-12-30T10:45:58.432Z",
+          "currentTopic": "JavaScript and API Requests",
+          "assessmentOfLastAnswer": "partial",
+          "isProbing": true
+        },
+        {
+          "role": "user",
+          "content": "I'd like to skip this question and move to the next one.",
+          "timestamp": "2025-12-30T10:46:37.737Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "I understand you'd like to move on, but I'd like to make sure you're comfortable with error handling in JavaScript. Let's take a step back and simplify this. Can you tell me about a time when you had to debug a simple JavaScript issue, like a syntax error or a variable not being defined, and how you went about resolving it?",
+          "timestamp": "2025-12-30T10:46:38.377Z",
+          "currentTopic": "JavaScript Error Handling and Debugging",
+          "assessmentOfLastAnswer": "brief",
+          "isProbing": true
+        }
+      ],
+      "summary": {
+        "score": 60,
+        "overallFeedback": "The candidate demonstrated a basic understanding of HTML, CSS, and JavaScript, but struggled to provide detailed explanations and examples of their experience with these technologies. They showed some familiarity with key concepts, such as using div elements with CSS flex and grid constructs, and preventing default form submission behavior with JavaScript. However, they often provided vague or incomplete answers, and were unable to articulate their thought process or problem-solving approach. The candidate also showed a tendency to avoid questions they were not comfortable with, rather than attempting to provide a thoughtful response.",
+        "topicsCovered": [
+          "HTML",
+          "CSS",
+          "JavaScript"
+        ],
+        "strengths": [
+          "Basic understanding of web development concepts",
+          "Familiarity with key technologies",
+          "Ability to recognize the importance of preventing default form submission behavior"
+        ],
+        "areasToImprove": [
+          "Providing detailed explanations and examples",
+          "Articulating thought process and problem-solving approach",
+          "Handling unfamiliar or challenging questions"
+        ],
+        "recommendedNextSteps": "The candidate should focus on developing their ability to communicate technical concepts clearly and effectively, and practice providing detailed explanations and examples of their experience with web development technologies. They should also work on building their confidence and ability to handle challenging or unfamiliar questions, and be willing to attempt to provide thoughtful responses even when they are not sure of the answer.",
+        "roleFitScore": 60,
+        "roleFitFeedback": "The candidate demonstrates some potential for the Junior Developer role, but will need to develop their technical communication skills and ability to handle challenging questions in order to be successful. They show a basic understanding of key technologies, but will need to build on this foundation and develop a more nuanced understanding of web development concepts and best practices.",
+        "difficultyProgression": "The candidate did not demonstrate a significant increase in difficulty throughout the interview, as the questions remained at a relatively basic level. However, they did show some ability to recognize and respond to key concepts, and were able to provide some relevant examples and explanations.",
+        "persona": {
+          "id": "hr-behavioral",
+          "name": "HR / Behavioral",
+          "style": "supportive",
+          "focusAreas": [
+            "soft-skills",
+            "culture-fit",
+            "communication",
+            "teamwork",
+            "conflict-resolution"
+          ],
+          "evaluationWeight": {
+            "technical": 0.1,
+            "communication": 0.5,
+            "problemSolving": 0.4
+          }
+        },
+        "targetRole": {
+          "id": "junior",
+          "name": "Junior Developer",
+          "level": 1,
+          "type": "generic",
+          "expectations": {
+            "technicalDepth": "foundational",
+            "independence": "guided",
+            "complexity": "simple"
+          }
+        },
+        "difficultyTracker": {
+          "currentLevel": 1,
+          "recentAssessments": [
+            "partial",
+            "partial",
+            "brief"
+          ],
+          "adjustmentHistory": []
+        }
+      }
+    },
+    {
+      "id": "int_1767089725193_epry1zx56",
+      "courseId": "fullstack-web-dev",
+      "courseName": "Full Stack Web Development",
+      "selectedTopics": [
+        "javascript"
+      ],
+      "topics": [
+        {
+          "id": "javascript",
+          "name": "JavaScript",
+          "description": "Core JavaScript programming",
+          "subtopics": [
+            "Variables & Data Types",
+            "Functions",
+            "Arrays",
+            "Objects",
+            "DOM Manipulation",
+            "Events",
+            "Promises & Async/Await",
+            "ES6+ Features",
+            "Error Handling"
+          ]
+        }
+      ],
+      "persona": null,
+      "targetRole": {
+        "id": "junior",
+        "name": "Junior Developer",
+        "level": 1,
+        "type": "generic",
+        "expectations": {
+          "technicalDepth": "foundational",
+          "independence": "guided",
+          "complexity": "simple"
+        }
+      },
+      "difficultyTracker": {
+        "currentLevel": 1,
+        "recentAssessments": [
+          "brief"
+        ],
+        "adjustmentHistory": []
+      },
+      "startTime": "2025-12-30T10:15:25.193Z",
+      "endTime": "2025-12-30T10:16:35.552Z",
+      "messages": [
+        {
+          "role": "interviewer",
+          "content": "Hello, I'm excited to have you here today to chat about Full Stack Web Development, specifically JavaScript. Let's get started with a foundational concept: variables. Can you tell me about the different data types you can assign to a variable in JavaScript, and give an example of when you might use each?",
+          "timestamp": "2025-12-30T10:15:25.895Z",
+          "currentTopic": "Variables & Data Types"
+        },
+        {
+          "role": "user",
+          "content": "number, string, boolean, object, array",
+          "timestamp": "2025-12-30T10:16:18.210Z"
+        },
+        {
+          "role": "interviewer",
+          "content": "That's a great start! You've listed the main data types in JavaScript. Now, can you tell me a bit more about the difference between null and undefined, and how you would use them or check for them in your code?",
+          "timestamp": "2025-12-30T10:16:19.173Z",
+          "currentTopic": "JavaScript Data Types",
+          "assessmentOfLastAnswer": "brief",
+          "isProbing": true
+        }
+      ],
+      "summary": {
+        "score": 75,
+        "overallFeedback": "The candidate demonstrated a good understanding of the foundational concepts in JavaScript, specifically the different data types that can be assigned to a variable. However, the candidate's responses were brief and lacked detailed explanations. They were able to list the main data types but did not provide examples of when to use each, and they did not address the difference between null and undefined as requested.",
+        "topicsCovered": [
+          "JavaScript Data Types",
+          "Null and Undefined"
+        ],
+        "strengths": [
+          "Ability to recall key data types in JavaScript",
+          "Basic understanding of JavaScript fundamentals"
+        ],
+        "areasToImprove": [
+          "Providing detailed explanations and examples",
+          "Addressing specific questions and topics in depth"
+        ],
+        "recommendedNextSteps": "The candidate should focus on developing their ability to explain complex concepts in detail, and practice addressing specific questions and topics in a more thorough manner. Reviewing and practicing with examples of using null and undefined in JavaScript code would also be beneficial.",
+        "roleFitScore": 70,
+        "roleFitFeedback": "The candidate demonstrates some potential for the Junior Developer role, but their lack of detail in their responses and inability to fully address the questions posed raises some concerns about their readiness for the position.",
+        "difficultyProgression": "The candidate did not have the opportunity to demonstrate their ability to handle increasing difficulty, as the interview questions remained at a foundational level throughout.",
+        "persona": null,
+        "targetRole": {
+          "id": "junior",
+          "name": "Junior Developer",
+          "level": 1,
+          "type": "generic",
+          "expectations": {
+            "technicalDepth": "foundational",
+            "independence": "guided",
+            "complexity": "simple"
+          }
+        },
+        "difficultyTracker": {
+          "currentLevel": 1,
+          "recentAssessments": [
+            "brief"
+          ],
+          "adjustmentHistory": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "selfeval",
+  "version": "1.0.0",
+  "description": "AI-powered learning Q&A app with performance tracking",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "learning",
+    "quiz",
+    "ai",
+    "groq"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-sqlite3": "^0.9.16",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-session": "^1.18.2",
+    "nodemailer": "^7.0.12",
+    "sqlite3": "^5.1.7"
+  }
+}
