@@ -310,6 +310,21 @@ router.put('/settings', async (req, res) => {
       await setSetting('interview_daily_question_limit', dailyLimit.toString());
     }
 
+    if (req.body.enabled_question_types !== undefined) {
+      // Validate and save enabled question types
+      const validTypes = ['mcq', 'truefalse', 'concept', 'comparison', 'fillblank'];
+      const enabledTypes = req.body.enabled_question_types.filter(t => validTypes.includes(t));
+      await setSetting('enabled_question_types', JSON.stringify(enabledTypes));
+    }
+
+    if (req.body.allow_question_type_selection !== undefined) {
+      await setSetting('allow_question_type_selection', req.body.allow_question_type_selection ? 'true' : 'false');
+    }
+
+    if (req.body.require_user_api_keys !== undefined) {
+      await setSetting('require_user_api_keys', req.body.require_user_api_keys ? 'true' : 'false');
+    }
+
     // Return updated settings
     const settings = await getAllSettings();
     const currentModelKey = settings.ai_model || DEFAULT_MODEL;

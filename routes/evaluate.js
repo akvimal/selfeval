@@ -27,8 +27,8 @@ router.post('/', requireAuth, async (req, res) => {
         skipped: true
       };
     } else {
-      // Evaluate the answer
-      result = await evaluateAnswer(type, question, userAnswer, questionData);
+      // Evaluate the answer (pass userId for user API keys)
+      result = await evaluateAnswer(type, question, userAnswer, questionData, userId);
     }
 
     // Update performance tracking (user-specific in SQLite)

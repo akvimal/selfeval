@@ -221,7 +221,7 @@
         <!-- Selection Section -->
         <div class="card mb-4">
           <div class="card-header">
-            <h5 class="mb-0">Select Topic & Question Type</h5>
+            <h5 class="mb-0" id="practice-section-title">Select Topic</h5>
           </div>
           <div class="card-body">
             <div class="row g-3">
@@ -235,18 +235,15 @@
                 <label for="type-select" class="form-label">Question Type</label>
                 <select id="type-select" class="form-select">
                   <option value="">Random</option>
-                  <option value="mcq">Multiple Choice</option>
-                  <option value="truefalse">True or False</option>
-                  <option value="concept">Concept Explanation</option>
-                  <option value="comparison">Comparison</option>
-                  <option value="fillblank">Fill in the Blank</option>
+                  <!-- Question types loaded dynamically -->
                 </select>
               </div>
             </div>
             <!-- Subtopics Section -->
             <div id="practice-subtopics-section" class="mt-3" style="display: none;">
-              <label class="form-label">Subtopics <small class="text-muted">(optional - select to focus on specific areas)</small></label>
+              <label class="form-label">Select a Subtopic <span class="text-danger">*</span></label>
               <div id="practice-subtopics-list" class="d-flex flex-wrap gap-2"></div>
+              <small class="text-muted mt-1 d-block">You must select one subtopic to practice</small>
             </div>
             <button id="generate-btn" class="btn btn-primary mt-3" disabled>
               Generate Question
@@ -284,6 +281,42 @@
 
               <!-- Text Answer -->
               <div id="text-answer" style="display: none;">
+                <!-- Sample Answer Guide for Concept/Comparison -->
+                <div id="answer-guide" class="mb-3" style="display: none;">
+                  <a class="text-decoration-none small text-primary" data-bs-toggle="collapse" href="#answer-format-guide" role="button">
+                    <i class="bi bi-lightbulb"></i> How should I structure my answer? (click to see guide)
+                  </a>
+                  <div class="collapse mt-2" id="answer-format-guide">
+                    <div class="card card-body bg-light small">
+                      <div id="concept-guide" style="display: none;">
+                        <strong>For Concept Questions:</strong>
+                        <ol class="mb-2 mt-2">
+                          <li><strong>Definition:</strong> Start with a clear, concise definition</li>
+                          <li><strong>Key Points:</strong> Explain 2-3 important aspects or characteristics</li>
+                          <li><strong>Example:</strong> Provide a practical example if applicable</li>
+                          <li><strong>Why it matters:</strong> Briefly explain why this concept is important</li>
+                        </ol>
+                        <div class="bg-white p-2 rounded border">
+                          <strong>Example format:</strong><br>
+                          <em>"[Concept] is [definition]. Key aspects include: 1) [point], 2) [point]. For example, [practical example]. This is important because [reason]."</em>
+                        </div>
+                      </div>
+                      <div id="comparison-guide" style="display: none;">
+                        <strong>For Comparison Questions:</strong>
+                        <ol class="mb-2 mt-2">
+                          <li><strong>Brief intro:</strong> Acknowledge what you're comparing</li>
+                          <li><strong>Similarities:</strong> List 1-2 things they have in common</li>
+                          <li><strong>Differences:</strong> List 2-3 key differences</li>
+                          <li><strong>When to use:</strong> Explain when you'd choose one over the other</li>
+                        </ol>
+                        <div class="bg-white p-2 rounded border">
+                          <strong>Example format:</strong><br>
+                          <em>"Both [A] and [B] are [similarity]. However, [A] differs in that [difference], while [B] [difference]. Use [A] when [scenario], and [B] when [scenario]."</em>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <textarea id="answer-input" class="form-control" rows="4" maxlength="1500" placeholder="Type your answer here..."></textarea>
                 <div class="d-flex justify-content-end mt-1">
                   <small id="answer-char-counter" class="text-muted">0 / 1500</small>

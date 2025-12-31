@@ -56,6 +56,68 @@
             <div id="password-message" class="mt-3"></div>
           </div>
         </div>
+
+        <!-- API Keys Configuration Card -->
+        <div class="card mt-4" id="api-keys-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">API Keys</h5>
+            <span id="api-keys-status-badge"></span>
+          </div>
+          <div class="card-body">
+            <div id="api-keys-notice" class="alert alert-info small mb-3" style="display: none;">
+              Your administrator requires you to configure your own API keys to use AI features.
+            </div>
+
+            <!-- Groq API Key -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">Groq API Key</label>
+              <p class="text-muted small mb-2">Get your free API key from <a href="https://console.groq.com/keys" target="_blank">console.groq.com</a></p>
+              <div class="input-group">
+                <input type="password" class="form-control" id="groq-api-key" placeholder="gsk_...">
+                <button class="btn btn-outline-secondary" type="button" id="toggle-groq-key">Show</button>
+                <button class="btn btn-outline-primary" type="button" id="test-groq-key">Test</button>
+              </div>
+              <div id="groq-key-status" class="mt-2"></div>
+            </div>
+
+            <!-- Anthropic API Key -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">Anthropic (Claude) API Key</label>
+              <p class="text-muted small mb-2">Get your API key from <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a></p>
+              <div class="input-group">
+                <input type="password" class="form-control" id="anthropic-api-key" placeholder="sk-ant-...">
+                <button class="btn btn-outline-secondary" type="button" id="toggle-anthropic-key">Show</button>
+                <button class="btn btn-outline-primary" type="button" id="test-anthropic-key">Test</button>
+              </div>
+              <div id="anthropic-key-status" class="mt-2"></div>
+            </div>
+
+            <!-- Preferred Model -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">Preferred AI Model</label>
+              <div id="model-options">
+                <p class="text-muted small">Loading available models...</p>
+              </div>
+              <div class="form-text">Select the model to use with your API keys. Models require the corresponding provider's API key.</div>
+            </div>
+
+            <button class="btn btn-primary" id="save-api-keys-btn">Save API Keys</button>
+            <button class="btn btn-outline-danger ms-2" id="clear-api-keys-btn">Clear All Keys</button>
+            <div id="api-keys-message" class="mt-3"></div>
+          </div>
+        </div>
+
+        <!-- API Usage Card -->
+        <div class="card mt-4" id="api-usage-card">
+          <div class="card-header">
+            <h5 class="mb-0">API Usage (Last 30 Days)</h5>
+          </div>
+          <div class="card-body">
+            <div id="api-usage-content">
+              <p class="text-muted">Loading usage data...</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -173,9 +235,304 @@
           messageDiv.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
         }
       });
+
+      // API Keys event listeners
+      setupApiKeysListeners();
     }
 
-    init();
+    // ============================================================
+    // API KEYS FUNCTIONS
+    // ============================================================
+
+    let availableModels = [];
+    let selectedModel = null;
+    let apiKeysConfig = null;
+
+    async function loadApiKeysConfig() {
+      try {
+        // Load user's API key configuration
+        const res = await fetch('/api/settings/api-keys');
+        if (res.ok) {
+          apiKeysConfig = await res.json();
+
+          // Show notice if required
+          if (apiKeysConfig.require_user_keys) {
+            document.getElementById('api-keys-notice').style.display = 'block';
+          }
+
+          // Update status badge
+          updateApiKeysBadge();
+
+          // Load available models and render
+          await loadAvailableModels();
+
+          // Load usage
+          await loadApiUsage();
+        }
+      } catch (error) {
+        console.error('Error loading API keys config:', error);
+      }
+    }
+
+    async function loadAvailableModels() {
+      try {
+        const res = await fetch('/api/settings/available-models');
+        if (res.ok) {
+          const data = await res.json();
+          availableModels = data.models || [];
+          selectedModel = apiKeysConfig?.preferred_model || data.systemDefault || 'groq:llama-3.3-70b-versatile';
+          renderModelOptions();
+        }
+      } catch (error) {
+        console.error('Error loading models:', error);
+      }
+    }
+
+    function renderModelOptions() {
+      const container = document.getElementById('model-options');
+
+      // Group models by provider
+      const groqModels = availableModels.filter(m => m.provider === 'groq');
+      const anthropicModels = availableModels.filter(m => m.provider === 'anthropic');
+
+      let html = '<div class="row">';
+
+      // Groq models
+      html += '<div class="col-md-6"><h6 class="text-muted small">Groq (Free)</h6>';
+      groqModels.forEach(model => {
+        const isSelected = model.key === selectedModel;
+        const isDisabled = !apiKeysConfig?.groq_configured;
+        html += '<div class="form-check mb-1">' +
+          '<input class="form-check-input model-radio" type="radio" name="user-model" id="model-' + model.key.replace(':', '-') + '" value="' + model.key + '"' + (isSelected ? ' checked' : '') + (isDisabled ? ' disabled' : '') + '>' +
+          '<label class="form-check-label small ' + (isDisabled ? 'text-muted' : '') + '" for="model-' + model.key.replace(':', '-') + '">' +
+          model.name + (isDisabled ? ' (requires key)' : '') +
+          '</label></div>';
+      });
+      html += '</div>';
+
+      // Anthropic models
+      html += '<div class="col-md-6"><h6 class="text-muted small">Anthropic Claude</h6>';
+      anthropicModels.forEach(model => {
+        const isSelected = model.key === selectedModel;
+        const isDisabled = !apiKeysConfig?.anthropic_configured;
+        html += '<div class="form-check mb-1">' +
+          '<input class="form-check-input model-radio" type="radio" name="user-model" id="model-' + model.key.replace(':', '-') + '" value="' + model.key + '"' + (isSelected ? ' checked' : '') + (isDisabled ? ' disabled' : '') + '>' +
+          '<label class="form-check-label small ' + (isDisabled ? 'text-muted' : '') + '" for="model-' + model.key.replace(':', '-') + '">' +
+          model.name + (isDisabled ? ' (requires key)' : '') +
+          '</label></div>';
+      });
+      html += '</div></div>';
+
+      container.innerHTML = html;
+
+      // Add change listeners
+      document.querySelectorAll('.model-radio').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          selectedModel = e.target.value;
+        });
+      });
+    }
+
+    function updateApiKeysBadge() {
+      const badge = document.getElementById('api-keys-status-badge');
+      const groqOk = apiKeysConfig?.groq_configured;
+      const anthropicOk = apiKeysConfig?.anthropic_configured;
+
+      if (groqOk || anthropicOk) {
+        const providers = [];
+        if (groqOk) providers.push('Groq');
+        if (anthropicOk) providers.push('Anthropic');
+        badge.innerHTML = '<span class="badge bg-success">' + providers.join(' + ') + ' configured</span>';
+      } else if (apiKeysConfig?.require_user_keys) {
+        badge.innerHTML = '<span class="badge bg-danger">Keys Required</span>';
+      } else {
+        badge.innerHTML = '<span class="badge bg-secondary">Using system keys</span>';
+      }
+    }
+
+    function setupApiKeysListeners() {
+      // Toggle visibility buttons
+      document.getElementById('toggle-groq-key').addEventListener('click', () => toggleKeyVisibility('groq'));
+      document.getElementById('toggle-anthropic-key').addEventListener('click', () => toggleKeyVisibility('anthropic'));
+
+      // Test buttons
+      document.getElementById('test-groq-key').addEventListener('click', () => testApiKey('groq'));
+      document.getElementById('test-anthropic-key').addEventListener('click', () => testApiKey('anthropic'));
+
+      // Save button
+      document.getElementById('save-api-keys-btn').addEventListener('click', saveApiKeys);
+
+      // Clear button
+      document.getElementById('clear-api-keys-btn').addEventListener('click', clearApiKeys);
+    }
+
+    function toggleKeyVisibility(provider) {
+      const input = document.getElementById(provider + '-api-key');
+      const btn = document.getElementById('toggle-' + provider + '-key');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
+    }
+
+    async function testApiKey(provider) {
+      const input = document.getElementById(provider + '-api-key');
+      const statusDiv = document.getElementById(provider + '-key-status');
+      const apiKey = input.value.trim();
+
+      if (!apiKey) {
+        statusDiv.innerHTML = '<span class="text-warning small">Enter an API key to test</span>';
+        return;
+      }
+
+      statusDiv.innerHTML = '<span class="text-muted small">Testing...</span>';
+
+      try {
+        const res = await fetch('/api/settings/api-keys/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ provider, api_key: apiKey })
+        });
+
+        // Check if response is OK
+        if (!res.ok) {
+          if (res.status === 401) {
+            statusDiv.innerHTML = '<span class="text-danger small">Please sign in again</span>';
+            return;
+          }
+          statusDiv.innerHTML = '<span class="text-danger small">Error: ' + res.status + '</span>';
+          return;
+        }
+
+        // Check if response is JSON
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          statusDiv.innerHTML = '<span class="text-danger small">Server error. Please try again.</span>';
+          return;
+        }
+
+        const result = await res.json();
+
+        if (result.valid) {
+          statusDiv.innerHTML = '<span class="text-success small">Valid! ' + (result.message || '') + '</span>';
+        } else {
+          statusDiv.innerHTML = '<span class="text-danger small">' + (result.message || 'Invalid key') + '</span>';
+        }
+      } catch (error) {
+        statusDiv.innerHTML = '<span class="text-danger small">Test failed: ' + error.message + '</span>';
+      }
+    }
+
+    async function saveApiKeys() {
+      const messageDiv = document.getElementById('api-keys-message');
+      const groqKey = document.getElementById('groq-api-key').value.trim();
+      const anthropicKey = document.getElementById('anthropic-api-key').value.trim();
+      const selectedModelRadio = document.querySelector('.model-radio:checked');
+      const preferredModel = selectedModelRadio ? selectedModelRadio.value : selectedModel;
+
+      messageDiv.innerHTML = '<span class="text-muted">Saving...</span>';
+
+      try {
+        const res = await fetch('/api/settings/api-keys', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            groq_api_key: groqKey || undefined,
+            anthropic_api_key: anthropicKey || undefined,
+            preferred_model: preferredModel
+          })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          messageDiv.innerHTML = '<div class="alert alert-success py-2">API keys saved successfully!</div>';
+          // Reload config to update status
+          await loadApiKeysConfig();
+          // Clear input fields after save (security)
+          document.getElementById('groq-api-key').value = '';
+          document.getElementById('anthropic-api-key').value = '';
+        } else {
+          throw new Error(result.error || 'Failed to save');
+        }
+      } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger py-2">' + error.message + '</div>';
+      }
+    }
+
+    async function clearApiKeys() {
+      if (!confirm('Are you sure you want to remove all your API keys?')) {
+        return;
+      }
+
+      const messageDiv = document.getElementById('api-keys-message');
+
+      try {
+        await fetch('/api/settings/api-keys/groq', { method: 'DELETE' });
+        await fetch('/api/settings/api-keys/anthropic', { method: 'DELETE' });
+
+        messageDiv.innerHTML = '<div class="alert alert-success py-2">API keys cleared.</div>';
+        await loadApiKeysConfig();
+      } catch (error) {
+        messageDiv.innerHTML = '<div class="alert alert-danger py-2">Failed to clear keys</div>';
+      }
+    }
+
+    async function loadApiUsage() {
+      const container = document.getElementById('api-usage-content');
+
+      try {
+        const res = await fetch('/api/settings/api-usage?days=30');
+        if (!res.ok) throw new Error('Failed to load usage');
+
+        const usage = await res.json();
+
+        if (usage.totals.requests === 0) {
+          container.innerHTML = '<p class="text-muted small mb-0">No API usage recorded yet. Usage will appear here once you start using your own API keys.</p>';
+          return;
+        }
+
+        let html = '<div class="row text-center mb-3">' +
+          '<div class="col-4"><h4 class="mb-0">' + usage.totals.requests + '</h4><small class="text-muted">Requests</small></div>' +
+          '<div class="col-4"><h4 class="mb-0">' + formatTokens(usage.totals.tokens) + '</h4><small class="text-muted">Tokens</small></div>' +
+          '<div class="col-4"><h4 class="mb-0">' + Object.keys(usage.totals.byProvider).length + '</h4><small class="text-muted">Providers</small></div>' +
+          '</div>';
+
+        // Provider breakdown
+        if (Object.keys(usage.totals.byProvider).length > 0) {
+          html += '<h6 class="small text-muted mb-2">By Provider</h6><ul class="list-group list-group-flush small">';
+          for (const [provider, stats] of Object.entries(usage.totals.byProvider)) {
+            html += '<li class="list-group-item d-flex justify-content-between px-0 py-1">' +
+              '<span class="text-capitalize">' + provider + '</span>' +
+              '<span>' + stats.requests + ' requests / ' + formatTokens(stats.tokens) + ' tokens</span>' +
+              '</li>';
+          }
+          html += '</ul>';
+        }
+
+        container.innerHTML = html;
+      } catch (error) {
+        container.innerHTML = '<p class="text-muted small">Could not load usage data.</p>';
+      }
+    }
+
+    function formatTokens(tokens) {
+      if (tokens >= 1000000) return (tokens / 1000000).toFixed(1) + 'M';
+      if (tokens >= 1000) return (tokens / 1000).toFixed(1) + 'K';
+      return tokens.toString();
+    }
+
+    // Initialize API keys on page load
+    async function initWithApiKeys() {
+      await init();
+      await loadApiKeysConfig();
+    }
+
+    initWithApiKeys();
   </script>
 </body>
 </html>

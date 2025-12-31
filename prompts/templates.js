@@ -14,13 +14,15 @@ const QUESTION_TYPE_LABELS = {
   fillblank: 'Fill in the Blank'
 };
 
-function getQuestionPrompt(topic, subtopics, questionType) {
+function getQuestionPrompt(topic, subtopics, questionType, specificSubtopic = null) {
   const subtopicList = subtopics.join(', ');
 
-  // Pick a random subtopic to focus on for variety
-  const focusSubtopic = subtopics.length > 0
-    ? subtopics[Math.floor(Math.random() * subtopics.length)]
-    : topic.name;
+  // Use specific subtopic if provided, otherwise pick randomly
+  const focusSubtopic = specificSubtopic
+    ? specificSubtopic
+    : (subtopics.length > 0
+        ? subtopics[Math.floor(Math.random() * subtopics.length)]
+        : topic.name);
 
   // Random seed for variety
   const seed = Math.floor(Math.random() * 10000);

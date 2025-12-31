@@ -292,8 +292,8 @@ router.post('/start', async (req, res) => {
     // Get difficulty context for initial prompt
     const difficultyContext = storage.getDifficultyContext(session.id);
 
-    // Generate initial interview question using AI
-    const response = await groq.startInterview(course, topics, persona, role, difficultyContext);
+    // Generate initial interview question using AI (pass userId for user API keys)
+    const response = await groq.startInterview(course, topics, persona, role, difficultyContext, req.user.id);
 
     // Store the interviewer's message
     storage.addMessageToSession(session.id, 'interviewer', response.message, {
@@ -367,7 +367,7 @@ router.post('/respond', async (req, res) => {
     // Get difficulty context
     const difficultyContext = storage.getDifficultyContext(sessionId);
 
-    // Generate AI response with persona and role context
+    // Generate AI response with persona and role context (pass userId for user API keys)
     const response = await groq.continueInterview(
       course,
       session.topics,
@@ -375,7 +375,8 @@ router.post('/respond', async (req, res) => {
       message,
       session.persona,
       session.targetRole,
-      difficultyContext
+      difficultyContext,
+      req.user.id
     );
 
     // Update difficulty tracking based on assessment (not for skipped)
@@ -437,14 +438,15 @@ router.post('/end', async (req, res) => {
     // Get final metrics before ending
     const metrics = storage.getSessionMetrics(sessionId);
 
-    // Generate summary using AI with persona, role, and difficulty context
+    // Generate summary using AI with persona, role, and difficulty context (pass userId for user API keys)
     const summary = await groq.endInterview(
       course,
       session.topics,
       session.messages,
       session.persona,
       session.targetRole,
-      session.difficultyTracker
+      session.difficultyTracker,
+      req.user.id
     );
 
     // Add persona and role info to summary

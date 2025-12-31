@@ -39,6 +39,7 @@ app.use('/api/history', require('./routes/history'));
 app.use('/api/interview', require('./routes/interview'));
 app.use('/api/learn', require('./routes/learn'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/settings', require('./routes/settings'));
 
 // Page Routes
 app.get('/', (req, res) => {

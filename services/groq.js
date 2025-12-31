@@ -6,7 +6,7 @@ const {
   getInterviewContinuePrompt,
   getInterviewSummaryPrompt
 } = require('../prompts/templates');
-const { getSetting } = require('./database');
+const { getSetting, getUserApiKeys, trackApiUsage } = require('./database');
 
 // API endpoints
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -26,23 +26,112 @@ const AVAILABLE_MODELS = {
 
 const DEFAULT_MODEL = 'groq:llama-3.3-70b-versatile';
 
-async function getModelConfig() {
+// Get model configuration - system default
+async function getSystemModelConfig() {
   try {
     const modelKey = await getSetting('ai_model') || DEFAULT_MODEL;
-    return AVAILABLE_MODELS[modelKey] || AVAILABLE_MODELS[DEFAULT_MODEL];
+    return { modelKey, config: AVAILABLE_MODELS[modelKey] || AVAILABLE_MODELS[DEFAULT_MODEL] };
   } catch (error) {
-    // Database might not be initialized yet
-    return AVAILABLE_MODELS[DEFAULT_MODEL];
+    return { modelKey: DEFAULT_MODEL, config: AVAILABLE_MODELS[DEFAULT_MODEL] };
   }
 }
 
-async function callGroqAPI(prompt, modelConfig) {
-  const apiKey = process.env.GROQ_API_KEY;
+// Get API configuration for a specific user
+async function getUserApiConfig(userId) {
+  if (!userId) return null;
 
-  if (!apiKey) {
-    throw new Error('GROQ_API_KEY is not set in environment variables');
+  try {
+    const userKeys = await getUserApiKeys(userId);
+    if (!userKeys) return null;
+
+    return {
+      groq_api_key: userKeys.groq_api_key,
+      anthropic_api_key: userKeys.anthropic_api_key,
+      preferred_model: userKeys.preferred_model,
+      groq_configured: userKeys.groq_configured,
+      anthropic_configured: userKeys.anthropic_configured
+    };
+  } catch (error) {
+    console.error('Error getting user API config:', error);
+    return null;
+  }
+}
+
+// Determine which API key and model to use
+async function resolveApiConfig(userId = null) {
+  const requireUserKeys = await getSetting('require_user_api_keys') === 'true';
+  const systemConfig = await getSystemModelConfig();
+  const userConfig = userId ? await getUserApiConfig(userId) : null;
+
+  let modelKey = systemConfig.modelKey;
+  let modelConfig = systemConfig.config;
+  let apiKey = null;
+  let usingUserKey = false;
+
+  // If user has a preferred model and the corresponding key, use it
+  if (userConfig?.preferred_model && AVAILABLE_MODELS[userConfig.preferred_model]) {
+    const preferredConfig = AVAILABLE_MODELS[userConfig.preferred_model];
+    const hasKey = preferredConfig.provider === 'groq'
+      ? userConfig.groq_api_key
+      : userConfig.anthropic_api_key;
+
+    if (hasKey) {
+      modelKey = userConfig.preferred_model;
+      modelConfig = preferredConfig;
+      apiKey = hasKey;
+      usingUserKey = true;
+    }
   }
 
+  // If no user key yet, try to find any available user key
+  if (!apiKey && userConfig) {
+    if (modelConfig.provider === 'groq' && userConfig.groq_api_key) {
+      apiKey = userConfig.groq_api_key;
+      usingUserKey = true;
+    } else if (modelConfig.provider === 'anthropic' && userConfig.anthropic_api_key) {
+      apiKey = userConfig.anthropic_api_key;
+      usingUserKey = true;
+    } else if (userConfig.groq_api_key) {
+      // Switch to groq if user has groq key but model is anthropic
+      const groqModelKey = 'groq:llama-3.3-70b-versatile';
+      modelKey = groqModelKey;
+      modelConfig = AVAILABLE_MODELS[groqModelKey];
+      apiKey = userConfig.groq_api_key;
+      usingUserKey = true;
+    } else if (userConfig.anthropic_api_key) {
+      // Switch to anthropic if user has anthropic key but model is groq
+      const anthropicModelKey = 'anthropic:claude-3-5-haiku-latest';
+      modelKey = anthropicModelKey;
+      modelConfig = AVAILABLE_MODELS[anthropicModelKey];
+      apiKey = userConfig.anthropic_api_key;
+      usingUserKey = true;
+    }
+  }
+
+  // Fall back to system keys if user keys not required or not available
+  if (!apiKey) {
+    if (requireUserKeys) {
+      throw new Error('You must configure your own API keys in your profile settings to use AI features.');
+    }
+
+    // Use system API key
+    if (modelConfig.provider === 'groq') {
+      apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) {
+        throw new Error('No API key available. Please configure your Groq API key in your profile settings.');
+      }
+    } else {
+      apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        throw new Error('No API key available. Please configure your Anthropic API key in your profile settings.');
+      }
+    }
+  }
+
+  return { modelKey, modelConfig, apiKey, usingUserKey, userId };
+}
+
+async function callGroqAPI(prompt, modelConfig, apiKey) {
   const response = await fetch(GROQ_API_URL, {
     method: 'POST',
     headers: {
@@ -72,16 +161,13 @@ async function callGroqAPI(prompt, modelConfig) {
   }
 
   const data = await response.json();
-  return data.choices[0].message.content;
+  return {
+    content: data.choices[0].message.content,
+    tokens: data.usage?.total_tokens || 0
+  };
 }
 
-async function callAnthropicAPI(prompt, modelConfig) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not set in environment variables. Add it to your .env file.');
-  }
-
+async function callAnthropicAPI(prompt, modelConfig, apiKey) {
   const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
     headers: {
@@ -108,23 +194,35 @@ async function callAnthropicAPI(prompt, modelConfig) {
   }
 
   const data = await response.json();
-  return data.content[0].text;
+  return {
+    content: data.content[0].text,
+    tokens: (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0)
+  };
 }
 
-async function callAI(prompt) {
-  const modelConfig = await getModelConfig();
+async function callAI(prompt, userId = null) {
+  const config = await resolveApiConfig(userId);
 
-  let content;
-  if (modelConfig.provider === 'anthropic') {
-    content = await callAnthropicAPI(prompt, modelConfig);
+  let result;
+  if (config.modelConfig.provider === 'anthropic') {
+    result = await callAnthropicAPI(prompt, config.modelConfig, config.apiKey);
   } else {
-    content = await callGroqAPI(prompt, modelConfig);
+    result = await callGroqAPI(prompt, config.modelConfig, config.apiKey);
+  }
+
+  // Track usage if using user's own API key
+  if (config.usingUserKey && config.userId) {
+    try {
+      await trackApiUsage(config.userId, config.modelConfig.provider, config.modelKey, result.tokens);
+    } catch (e) {
+      console.error('Failed to track API usage:', e);
+    }
   }
 
   // Parse JSON from response, handling potential markdown code blocks
-  let jsonStr = content;
-  if (content.includes('```')) {
-    const match = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+  let jsonStr = result.content;
+  if (result.content.includes('```')) {
+    const match = result.content.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (match) {
       jsonStr = match[1];
     }
@@ -133,29 +231,30 @@ async function callAI(prompt) {
   try {
     return JSON.parse(jsonStr.trim());
   } catch (e) {
-    console.error('Failed to parse AI response:', content);
+    console.error('Failed to parse AI response:', result.content);
     throw new Error('Failed to parse AI response as JSON');
   }
 }
 
 // Legacy function name for compatibility
-async function callGroq(prompt) {
-  return callAI(prompt);
+async function callGroq(prompt, userId = null) {
+  return callAI(prompt, userId);
 }
 
-async function generateQuestion(topic, questionType) {
-  const prompt = getQuestionPrompt(topic, topic.subtopics, questionType);
-  const question = await callGroq(prompt);
+async function generateQuestion(topic, questionType, specificSubtopic = null, userId = null) {
+  const prompt = getQuestionPrompt(topic, topic.subtopics, questionType, specificSubtopic);
+  const question = await callGroq(prompt, userId);
 
   return {
     ...question,
     type: questionType,
     topicId: topic.id,
-    topicName: topic.name
+    topicName: topic.name,
+    subtopic: specificSubtopic || null
   };
 }
 
-async function evaluateAnswer(questionType, question, userAnswer, questionData) {
+async function evaluateAnswer(questionType, question, userAnswer, questionData, userId = null) {
   const prompt = getEvaluationPrompt(questionType, question, userAnswer, questionData);
 
   if (!prompt) {
@@ -164,7 +263,7 @@ async function evaluateAnswer(questionType, question, userAnswer, questionData) 
   }
 
   // For concept and comparison - use AI evaluation
-  return await callGroq(prompt);
+  return await callGroq(prompt, userId);
 }
 
 function evaluateDirectAnswer(questionType, userAnswer, questionData) {
@@ -205,7 +304,7 @@ function evaluateDirectAnswer(questionType, userAnswer, questionData) {
   return { isCorrect, score, feedback };
 }
 
-async function getSuggestions(performance) {
+async function getSuggestions(performance, userId = null) {
   if (!performance.overall || performance.overall.totalQuestions === 0) {
     return {
       motivation: "Welcome to your learning journey! Start practicing with any topic to begin tracking your progress.",
@@ -221,26 +320,26 @@ async function getSuggestions(performance) {
   }
 
   const prompt = getSuggestionsPrompt(performance);
-  return await callGroq(prompt);
+  return await callGroq(prompt, userId);
 }
 
 // ============================================================
 // INTERVIEW FUNCTIONS
 // ============================================================
 
-async function startInterview(course, topics, persona = null, role = null, difficultyContext = null) {
+async function startInterview(course, topics, persona = null, role = null, difficultyContext = null, userId = null) {
   const prompt = getInterviewStartPrompt(course, topics, persona, role, difficultyContext);
-  return await callGroq(prompt);
+  return await callGroq(prompt, userId);
 }
 
-async function continueInterview(course, topics, conversationHistory, userResponse, persona = null, role = null, difficultyContext = null) {
+async function continueInterview(course, topics, conversationHistory, userResponse, persona = null, role = null, difficultyContext = null, userId = null) {
   const prompt = getInterviewContinuePrompt(course, topics, conversationHistory, userResponse, persona, role, difficultyContext);
-  return await callGroq(prompt);
+  return await callGroq(prompt, userId);
 }
 
-async function endInterview(course, topics, conversationHistory, persona = null, role = null, difficultyTracker = null) {
+async function endInterview(course, topics, conversationHistory, persona = null, role = null, difficultyTracker = null, userId = null) {
   const prompt = getInterviewSummaryPrompt(course, topics, conversationHistory, persona, role, difficultyTracker);
-  return await callGroq(prompt);
+  return await callGroq(prompt, userId);
 }
 
 module.exports = {

@@ -289,13 +289,21 @@ function updateActivityList() {
     const timeAgo = getTimeAgo(date);
     const icon = activity.isCorrect ? '✓' : '✗';
     const iconClass = activity.isCorrect ? 'text-success' : 'text-danger';
+    const questionType = activity.questionType || 'practice';
+    const typeLabels = {
+      'mcq': 'Multiple Choice',
+      'truefalse': 'True/False',
+      'concept': 'Concept',
+      'comparison': 'Comparison',
+      'fillblank': 'Fill in Blank'
+    };
 
     return `
       <div class="activity-item d-flex align-items-start mb-2 pb-2 border-bottom">
         <span class="${iconClass} me-2 fw-bold">${icon}</span>
         <div class="flex-grow-1">
-          <div class="small fw-medium">${activity.topicName}</div>
-          <div class="small text-muted text-truncate" style="max-width: 180px;">${activity.question}</div>
+          <div class="small fw-medium">${activity.topicName || 'Unknown Topic'}</div>
+          <div class="small text-muted">${typeLabels[questionType] || questionType}</div>
           <div class="small text-muted">${timeAgo}</div>
         </div>
         <span class="badge ${activity.isCorrect ? 'bg-success' : 'bg-secondary'}">${activity.score}%</span>
@@ -657,6 +665,45 @@ function resetLessonView() {
 // PRACTICE TAB
 // ============================================================
 
+async function loadQuestionTypes() {
+  const typeSelect = document.getElementById('type-select');
+  const typeSelectContainer = typeSelect.closest('.col-md-6');
+  const sectionTitle = document.getElementById('practice-section-title');
+
+  try {
+    const response = await fetch('/api/questions/types');
+    const data = await response.json();
+
+    // Check if learner is allowed to select question type
+    if (!data.allowSelection) {
+      // Hide the question type dropdown - always random
+      typeSelectContainer.style.display = 'none';
+      typeSelect.value = ''; // Ensure random selection
+      sectionTitle.textContent = 'Select Topic';
+      return;
+    }
+
+    // Show the dropdown if selection is allowed
+    typeSelectContainer.style.display = 'block';
+    sectionTitle.textContent = 'Select Topic & Question Type';
+
+    // Keep "Random" as first option, add enabled types
+    typeSelect.innerHTML = '<option value="">Random</option>';
+
+    data.types.forEach(type => {
+      const option = document.createElement('option');
+      option.value = type.id;
+      option.textContent = type.label;
+      typeSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Failed to load question types:', error);
+    // On error, hide the dropdown (default to random)
+    typeSelectContainer.style.display = 'none';
+    typeSelect.value = '';
+  }
+}
+
 async function initPracticeTab() {
   // Populate topic dropdown
   const topicSelect = document.getElementById('topic-select');
@@ -669,13 +716,15 @@ async function initPracticeTab() {
     topicSelect.appendChild(option);
   });
 
+  // Load question types from API
+  await loadQuestionTypes();
+
   // Setup event listeners
   topicSelect.addEventListener('change', () => {
-    document.getElementById('generate-btn').disabled = !topicSelect.value;
-
     // Show subtopics for selected topic
     const subtopicsSection = document.getElementById('practice-subtopics-section');
     const subtopicsList = document.getElementById('practice-subtopics-list');
+    const generateBtn = document.getElementById('generate-btn');
 
     if (topicSelect.value) {
       const selectedTopic = course.topics.find(t => t.id === topicSelect.value);
@@ -688,18 +737,29 @@ async function initPracticeTab() {
           btn.dataset.subtopicIndex = index;
           btn.textContent = subtopic;
           btn.addEventListener('click', () => {
-            btn.classList.toggle('active');
-            btn.classList.toggle('btn-outline-secondary');
-            btn.classList.toggle('btn-primary');
+            // Radio-style: deselect all others, select this one
+            document.querySelectorAll('.practice-subtopic-btn').forEach(b => {
+              b.classList.remove('active', 'btn-primary');
+              b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('active', 'btn-primary');
+            // Enable generate button when subtopic is selected
+            generateBtn.disabled = false;
           });
           subtopicsList.appendChild(btn);
         });
         subtopicsSection.style.display = 'block';
+        // Disable generate button until subtopic is selected
+        generateBtn.disabled = true;
       } else {
+        // No subtopics - enable generate button with topic selection
         subtopicsSection.style.display = 'none';
+        generateBtn.disabled = false;
       }
     } else {
       subtopicsSection.style.display = 'none';
+      generateBtn.disabled = true;
     }
   });
 
@@ -739,6 +799,18 @@ async function generateQuestion() {
     return;
   }
 
+  // Get selected subtopic (mandatory)
+  const selectedSubtopicBtn = document.querySelector('.practice-subtopic-btn.active');
+  const subtopicsSection = document.getElementById('practice-subtopics-section');
+
+  // Check if subtopics are shown and one must be selected
+  if (subtopicsSection.style.display !== 'none' && !selectedSubtopicBtn) {
+    alert('Please select a subtopic');
+    return;
+  }
+
+  const selectedSubtopic = selectedSubtopicBtn ? selectedSubtopicBtn.textContent : null;
+
   showLoading('Generating question...');
   document.getElementById('result-section').style.display = 'none';
 
@@ -746,7 +818,12 @@ async function generateQuestion() {
     const response = await fetch('/api/questions/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ courseId, topicId, questionType: questionType || undefined })
+      body: JSON.stringify({
+        courseId,
+        topicId,
+        questionType: questionType || undefined,
+        subtopic: selectedSubtopic
+      })
     });
 
     if (!response.ok) throw new Error('Failed to generate question');
@@ -782,6 +859,21 @@ function displayQuestion(question) {
   document.querySelectorAll('input[name="tf-answer"]').forEach(input => input.checked = false);
   document.getElementById('submit-btn').disabled = true;
 
+  // Hide answer guide by default
+  const answerGuide = document.getElementById('answer-guide');
+  const conceptGuide = document.getElementById('concept-guide');
+  const comparisonGuide = document.getElementById('comparison-guide');
+  if (answerGuide) {
+    answerGuide.style.display = 'none';
+    conceptGuide.style.display = 'none';
+    comparisonGuide.style.display = 'none';
+    // Reset collapse state
+    const collapseEl = document.getElementById('answer-format-guide');
+    if (collapseEl && collapseEl.classList.contains('show')) {
+      collapseEl.classList.remove('show');
+    }
+  }
+
   // Show appropriate answer type
   switch (question.type) {
     case 'mcq':
@@ -791,11 +883,22 @@ function displayQuestion(question) {
       document.getElementById('tf-options').style.display = 'block';
       break;
     case 'concept':
+      document.getElementById('text-answer').style.display = 'block';
+      document.getElementById('answer-input').placeholder = 'Explain the concept in your own words...';
+      // Show concept answer guide
+      if (answerGuide) {
+        answerGuide.style.display = 'block';
+        conceptGuide.style.display = 'block';
+      }
+      break;
     case 'comparison':
       document.getElementById('text-answer').style.display = 'block';
-      document.getElementById('answer-input').placeholder = question.type === 'concept'
-        ? 'Explain the concept in your own words...'
-        : 'Write your comparison of the two items...';
+      document.getElementById('answer-input').placeholder = 'Write your comparison of the two items...';
+      // Show comparison answer guide
+      if (answerGuide) {
+        answerGuide.style.display = 'block';
+        comparisonGuide.style.display = 'block';
+      }
       break;
     case 'fillblank':
       document.getElementById('fillblank-answer').style.display = 'block';

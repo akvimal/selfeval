@@ -189,7 +189,7 @@ router.get('/course/:courseId', requireAuth, async (req, res) => {
 router.get('/suggestions', requireAuth, async (req, res) => {
   try {
     const performance = await buildPerformanceData(req.user.id);
-    const suggestions = await getSuggestions(performance);
+    const suggestions = await getSuggestions(performance, req.user.id);
     res.json(suggestions);
   } catch (error) {
     console.error('Error getting suggestions:', error);

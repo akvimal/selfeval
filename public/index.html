@@ -3,38 +3,615 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SelfEval - Learning Q&A</title>
+  <title>SelfEval - AI-Powered Learning & Self-Evaluation Platform</title>
+  <meta name="description" content="Master any subject with AI-powered practice questions, interactive interviews, and personalized learning insights.">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
+  <style>
+    /* Landing Page Styles */
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .hero-subtitle {
+      font-size: 1.25rem;
+      opacity: 0.9;
+    }
+    .btn-hero {
+      padding: 0.875rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+    .btn-hero:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .btn-hero-primary {
+      background: #fff;
+      color: #667eea;
+    }
+    .btn-hero-primary:hover {
+      background: #f8f9fa;
+      color: #764ba2;
+    }
+    .btn-hero-outline {
+      border: 2px solid rgba(255,255,255,0.8);
+      color: #fff;
+    }
+    .btn-hero-outline:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: #fff;
+      color: #fff;
+    }
+    .floating-cards {
+      position: absolute;
+      right: -100px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.15;
+    }
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .feature-card {
+      padding: 2rem;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid #e9ecef;
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      border-color: transparent;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: #6c757d;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .step-number {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-connector {
+      position: absolute;
+      left: 25px;
+      top: 60px;
+      bottom: -20px;
+      width: 2px;
+      background: linear-gradient(to bottom, #667eea, #764ba2);
+    }
+    .stats-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .stat-item h3 {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    .testimonial-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .cta-section {
+      background: #f8f9fa;
+    }
+    .navbar-landing {
+      background: transparent !important;
+      transition: all 0.3s ease;
+    }
+    .navbar-landing.scrolled {
+      background: rgba(102, 126, 234, 0.95) !important;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .benefit-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      .hero-section {
+        min-height: auto;
+        padding: 6rem 0;
+      }
+      .floating-cards {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="/">SelfEval</a>
-      <div class="navbar-nav ms-auto" id="nav-items">
-        <a class="nav-link" href="/">Courses</a>
-        <a class="nav-link" href="/signin">Sign In</a>
+  <!-- Landing Page (shown when not logged in) -->
+  <div id="landing-page" style="display: none;">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-landing fixed-top">
+      <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="/">
+          <i class="bi bi-mortarboard-fill me-2"></i>SelfEval
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="landingNav">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item">
+              <a class="nav-link" href="#features">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#how-it-works">How It Works</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#benefits">Benefits</a>
+            </li>
+            <li class="nav-item ms-lg-3">
+              <a class="btn btn-outline-light btn-sm px-3" href="/signin">Sign In</a>
+            </li>
+            <li class="nav-item ms-2">
+              <a class="btn btn-light btn-sm px-3 text-primary fw-semibold" href="/signup">Get Started</a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main class="container py-4">
-    <!-- Login Prompt (shown when not logged in) -->
-    <section id="login-section" class="text-center py-5" style="display: none;">
-      <h1 class="display-5 mb-3">Welcome to SelfEval</h1>
-      <p class="lead text-muted mb-4">AI-powered learning and self-evaluation platform</p>
-      <p class="text-muted mb-4">Please sign in to access courses and track your progress</p>
-      <div class="d-flex justify-content-center gap-3">
-        <a href="/signin" class="btn btn-primary btn-lg">Sign In</a>
-        <a href="/signup" class="btn btn-outline-primary btn-lg">Sign Up</a>
+    <!-- Hero Section -->
+    <section class="hero-section text-white">
+      <div class="container hero-content">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <span class="badge bg-white text-primary mb-3 px-3 py-2 rounded-pill">
+              <i class="bi bi-stars me-1"></i> AI-Powered Learning Platform
+            </span>
+            <h1 class="hero-title mb-4">
+              Master Any Subject with<br>
+              <span class="text-warning">Intelligent Practice</span>
+            </h1>
+            <p class="hero-subtitle mb-4 pe-lg-5">
+              Accelerate your learning with AI-generated questions, interactive mock interviews,
+              and personalized insights. Track your progress and achieve mastery faster than ever.
+            </p>
+            <div class="d-flex flex-wrap gap-3 mb-5">
+              <a href="/signup" class="btn btn-hero btn-hero-primary">
+                <i class="bi bi-rocket-takeoff me-2"></i>Start Learning Free
+              </a>
+              <a href="#features" class="btn btn-hero btn-hero-outline">
+                <i class="bi bi-play-circle me-2"></i>See How It Works
+              </a>
+            </div>
+            <div class="d-flex flex-wrap gap-4 text-white-50">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <span>No credit card required</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <span>Instant access</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                <span>AI-powered</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5 d-none d-lg-block">
+            <div class="position-relative">
+              <div class="card shadow-lg border-0 rounded-4 p-4 mb-3" style="transform: rotate(3deg);">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                    <i class="bi bi-lightbulb text-primary"></i>
+                  </div>
+                  <span class="fw-semibold">Concept Question</span>
+                </div>
+                <p class="text-muted mb-0 small">Explain the difference between supervised and unsupervised learning...</p>
+              </div>
+              <div class="card shadow-lg border-0 rounded-4 p-4 mb-3" style="transform: rotate(-2deg); margin-left: 40px;">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                    <i class="bi bi-chat-dots text-success"></i>
+                  </div>
+                  <span class="fw-semibold">Mock Interview</span>
+                </div>
+                <p class="text-muted mb-0 small">Tell me about a challenging project you worked on...</p>
+              </div>
+              <div class="card shadow-lg border-0 rounded-4 p-4" style="transform: rotate(1deg); margin-left: 20px;">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                    <i class="bi bi-graph-up text-warning"></i>
+                  </div>
+                  <span class="fw-semibold">Progress Tracking</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted small">Accuracy</span>
+                  <span class="badge bg-success">87%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Main Content (shown when logged in) -->
-    <section id="main-content" style="display: none;">
+    <!-- Features Section -->
+    <section id="features" class="py-5 py-lg-6">
+      <div class="container py-5">
+        <div class="text-center mb-5">
+          <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2">Features</span>
+          <h2 class="section-title">Everything You Need to Excel</h2>
+          <p class="section-subtitle">
+            Powerful AI-driven tools designed to accelerate your learning and help you achieve your goals.
+          </p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-robot"></i>
+              </div>
+              <h4 class="fw-bold mb-3">AI Question Generation</h4>
+              <p class="text-muted mb-0">
+                Get unlimited, unique practice questions generated by AI across multiple formats:
+                MCQ, True/False, Concept explanations, and more.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-person-video3"></i>
+              </div>
+              <h4 class="fw-bold mb-3">Interactive Interviews</h4>
+              <p class="text-muted mb-0">
+                Practice with AI interviewers featuring different personas. Get real-time feedback
+                and improve your communication skills.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <h4 class="fw-bold mb-3">Progress Analytics</h4>
+              <p class="text-muted mb-0">
+                Track your performance across topics with detailed analytics. Identify strengths,
+                weaknesses, and get AI-powered improvement suggestions.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-journal-bookmark"></i>
+              </div>
+              <h4 class="fw-bold mb-3">Custom Courses</h4>
+              <p class="text-muted mb-0">
+                Create your own courses with custom topics and subtopics. Perfect for exam prep,
+                professional development, or personal learning.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-lightbulb"></i>
+              </div>
+              <h4 class="fw-bold mb-3">Instant Feedback</h4>
+              <p class="text-muted mb-0">
+                Receive detailed explanations for every answer. Learn not just what's correct,
+                but understand the reasoning behind it.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="feature-card">
+              <div class="feature-icon bg-purple bg-opacity-10" style="background: rgba(102, 126, 234, 0.1); color: #667eea;">
+                <i class="bi bi-sliders"></i>
+              </div>
+              <h4 class="fw-bold mb-3">Flexible AI Models</h4>
+              <p class="text-muted mb-0">
+                Choose from multiple AI providers and models. Use your own API keys or
+                system-provided access for maximum flexibility.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 bg-light">
+      <div class="container py-5">
+        <div class="text-center mb-5">
+          <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2">How It Works</span>
+          <h2 class="section-title">Start Learning in Minutes</h2>
+          <p class="section-subtitle">
+            Get started with just a few simple steps and begin your learning journey today.
+          </p>
+        </div>
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="position-relative">
+              <!-- Step 1 -->
+              <div class="d-flex gap-4 mb-5 position-relative">
+                <div class="step-number">1</div>
+                <div class="step-connector d-none d-md-block"></div>
+                <div>
+                  <h4 class="fw-bold mb-2">Create Your Account</h4>
+                  <p class="text-muted mb-0">
+                    Sign up for free in seconds. No credit card required.
+                    Get instant access to all learning features.
+                  </p>
+                </div>
+              </div>
+              <!-- Step 2 -->
+              <div class="d-flex gap-4 mb-5 position-relative">
+                <div class="step-number">2</div>
+                <div class="step-connector d-none d-md-block"></div>
+                <div>
+                  <h4 class="fw-bold mb-2">Choose or Create a Course</h4>
+                  <p class="text-muted mb-0">
+                    Select from available courses or create your own with custom topics.
+                    Define exactly what you want to learn.
+                  </p>
+                </div>
+              </div>
+              <!-- Step 3 -->
+              <div class="d-flex gap-4 mb-5 position-relative">
+                <div class="step-number">3</div>
+                <div class="step-connector d-none d-md-block"></div>
+                <div>
+                  <h4 class="fw-bold mb-2">Practice with AI Questions</h4>
+                  <p class="text-muted mb-0">
+                    Answer AI-generated questions, get instant feedback, and learn from
+                    detailed explanations. Practice at your own pace.
+                  </p>
+                </div>
+              </div>
+              <!-- Step 4 -->
+              <div class="d-flex gap-4">
+                <div class="step-number">4</div>
+                <div>
+                  <h4 class="fw-bold mb-2">Track & Improve</h4>
+                  <p class="text-muted mb-0">
+                    Monitor your progress, take mock interviews, and receive personalized
+                    suggestions to accelerate your learning.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="py-5">
+      <div class="container py-5">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-5 mb-lg-0">
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2">Benefits</span>
+            <h2 class="section-title">Why Choose SelfEval?</h2>
+            <p class="text-muted mb-4">
+              Whether you're preparing for exams, interviews, or just expanding your knowledge,
+              SelfEval provides the tools you need to succeed.
+            </p>
+            <div class="benefit-item">
+              <div class="benefit-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-lightning-charge-fill"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1">Learn Faster</h5>
+                <p class="text-muted mb-0 small">AI-powered spaced repetition and targeted practice help you retain information longer.</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-bullseye"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1">Focus on Weak Areas</h5>
+                <p class="text-muted mb-0 small">Analytics identify your knowledge gaps so you can focus your efforts where they matter most.</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-clock-history"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1">Practice Anytime</h5>
+                <p class="text-muted mb-0 small">No scheduling needed. Practice whenever you have time, from any device.</p>
+              </div>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1">Interview Ready</h5>
+                <p class="text-muted mb-0 small">Build confidence with realistic mock interviews before the real thing.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="row g-4">
+              <div class="col-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                  <h3 class="fw-bold text-primary mb-1">5+</h3>
+                  <p class="text-muted small mb-0">Question Types</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                  <h3 class="fw-bold text-success mb-1">AI</h3>
+                  <p class="text-muted small mb-0">Powered Feedback</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                  <h3 class="fw-bold text-warning mb-1">24/7</h3>
+                  <p class="text-muted small mb-0">Practice Anytime</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                  <h3 class="fw-bold text-info mb-1">100%</h3>
+                  <p class="text-muted small mb-0">Personalized</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5">
+      <div class="container py-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 text-center">
+            <h2 class="section-title mb-4">Ready to Accelerate Your Learning?</h2>
+            <p class="text-muted mb-4">
+              Join learners who are using AI-powered practice to achieve their goals faster.
+              Get started for free today.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a href="/signup" class="btn btn-primary btn-lg px-5 rounded-pill">
+                <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+              </a>
+              <a href="/signin" class="btn btn-outline-primary btn-lg px-5 rounded-pill">
+                Sign In
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <h5 class="fw-bold mb-3">
+              <i class="bi bi-mortarboard-fill me-2"></i>SelfEval
+            </h5>
+            <p class="text-white-50 mb-3">
+              AI-powered learning and self-evaluation platform. Master any subject with intelligent practice.
+            </p>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h6 class="fw-bold mb-3">Product</h6>
+            <ul class="list-unstyled text-white-50">
+              <li class="mb-2"><a href="#features" class="text-white-50 text-decoration-none">Features</a></li>
+              <li class="mb-2"><a href="#how-it-works" class="text-white-50 text-decoration-none">How It Works</a></li>
+              <li class="mb-2"><a href="#benefits" class="text-white-50 text-decoration-none">Benefits</a></li>
+            </ul>
+          </div>
+          <div class="col-6 col-lg-2">
+            <h6 class="fw-bold mb-3">Account</h6>
+            <ul class="list-unstyled text-white-50">
+              <li class="mb-2"><a href="/signin" class="text-white-50 text-decoration-none">Sign In</a></li>
+              <li class="mb-2"><a href="/signup" class="text-white-50 text-decoration-none">Sign Up</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <h6 class="fw-bold mb-3">Start Learning Today</h6>
+            <p class="text-white-50 small mb-3">
+              Create your free account and start practicing with AI-powered questions.
+            </p>
+            <a href="/signup" class="btn btn-primary btn-sm">Get Started</a>
+          </div>
+        </div>
+        <hr class="my-4 border-secondary">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+          <p class="text-white-50 small mb-0">&copy; 2024 SelfEval. All rights reserved.</p>
+          <p class="text-white-50 small mb-0">Powered by AI</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- App Content (shown when logged in) -->
+  <div id="app-content" style="display: none;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+          <i class="bi bi-mortarboard-fill me-2"></i>SelfEval
+        </a>
+        <div class="navbar-nav ms-auto" id="nav-items">
+          <!-- Dynamically populated by updateNavbar() -->
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
       <!-- Header -->
       <section class="text-center mb-5">
-        <h1 class="display-5 mb-3">Welcome to SelfEval</h1>
+        <h1 class="display-5 mb-3">Welcome back!</h1>
         <p class="lead text-muted">Choose a course to start practicing, take interviews, and track your progress</p>
       </section>
 
@@ -53,22 +630,40 @@
 
       <!-- Empty State -->
       <section id="empty-state" class="text-center py-5" style="display: none;">
-        <h4 class="text-muted">No courses available</h4>
-        <p class="text-muted">Create your first course to get started</p>
-        <a href="/manage" class="btn btn-primary">Manage Courses</a>
+        <div class="card border-0 shadow-sm p-5 mx-auto" style="max-width: 500px;">
+          <i class="bi bi-journal-plus text-muted" style="font-size: 4rem;"></i>
+          <h4 class="mt-4 mb-2">No courses yet</h4>
+          <p class="text-muted mb-4">Create your first course to get started with AI-powered learning</p>
+          <a href="/manage" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Create Course
+          </a>
+        </div>
       </section>
-    </section>
-  </main>
+    </main>
 
-  <footer class="footer mt-auto py-3 bg-light">
-    <div class="container text-center">
-      <span class="text-muted">SelfEval - AI-Powered Learning</span>
-    </div>
-  </footer>
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container text-center">
+        <span class="text-muted">SelfEval - AI-Powered Learning</span>
+      </div>
+    </footer>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/auth.js"></script>
   <script>
-    // Load courses on page load
+    // Navbar scroll effect for landing page
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar-landing');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      }
+    });
+
+    // Load courses for logged-in users
     async function loadCourses() {
       try {
         const [coursesRes, performanceRes] = await Promise.all([
@@ -112,24 +707,31 @@
 
           return `
             <div class="col-md-6 col-lg-4">
-              <div class="card course-card h-100" onclick="window.location.href='/course/${course.id}'">
+              <div class="card course-card h-100 border-0 shadow-sm" style="cursor: pointer; transition: all 0.3s ease;"
+                   onclick="window.location.href='/course/${course.id}'"
+                   onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)';"
+                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 .125rem .25rem rgba(0,0,0,.075)';">
                 <div class="card-body">
                   <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title mb-0">${course.name}</h5>
+                    <h5 class="card-title mb-0 fw-bold">${course.name}</h5>
                     <span class="badge ${progressClass}">${progressText}</span>
                   </div>
                   <p class="card-text text-muted small">${course.description || ''}</p>
                   <div class="d-flex justify-content-between align-items-center mt-3">
                     <small class="text-muted">
-                      <strong>${topicCount}</strong> topics
+                      <i class="bi bi-collection me-1"></i><strong>${topicCount}</strong> topics
                     </small>
-                    ${attempts > 0 ? `<small class="text-muted">${attempts} questions attempted</small>` : ''}
+                    ${attempts > 0 ? `<small class="text-muted"><i class="bi bi-check2-circle me-1"></i>${attempts} answered</small>` : ''}
                   </div>
                 </div>
-                <div class="card-footer bg-white border-top-0">
+                <div class="card-footer bg-white border-top-0 pt-0">
                   <div class="d-flex gap-2">
-                    <span class="btn btn-sm btn-outline-primary flex-grow-1">Practice</span>
-                    <span class="btn btn-sm btn-outline-secondary flex-grow-1">Interview</span>
+                    <span class="btn btn-sm btn-primary flex-grow-1">
+                      <i class="bi bi-pencil-square me-1"></i>Practice
+                    </span>
+                    <span class="btn btn-sm btn-outline-secondary flex-grow-1">
+                      <i class="bi bi-chat-dots me-1"></i>Interview
+                    </span>
                   </div>
                 </div>
               </div>
@@ -141,7 +743,9 @@
         console.error('Error loading courses:', error);
         document.getElementById('courses-grid').innerHTML = `
           <div class="col-12">
-            <div class="alert alert-danger">Failed to load courses. Please try again.</div>
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle me-2"></i>Failed to load courses. Please try again.
+            </div>
           </div>
         `;
       }
@@ -149,18 +753,19 @@
 
     // Initialize on DOM ready
     document.addEventListener('DOMContentLoaded', async () => {
-      await updateNavbar();
-
       // Check if user is logged in
       const user = await getCurrentUser();
 
       if (user) {
-        // Show main content for logged-in users
-        document.getElementById('main-content').style.display = 'block';
+        // Show app content for logged-in users
+        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('landing-page').style.display = 'none';
+        await updateNavbar();
         await loadCourses();
       } else {
-        // Show login prompt for guests
-        document.getElementById('login-section').style.display = 'block';
+        // Show landing page for guests
+        document.getElementById('landing-page').style.display = 'block';
+        document.getElementById('app-content').style.display = 'none';
       }
     });
   </script>

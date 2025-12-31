@@ -98,11 +98,42 @@ function initDatabase() {
           )
         `);
 
+        // User API keys table
+        db.run(`
+          CREATE TABLE IF NOT EXISTS user_api_keys (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER UNIQUE NOT NULL,
+            groq_api_key TEXT,
+            anthropic_api_key TEXT,
+            preferred_model TEXT,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+          )
+        `);
+        // Add preferred_model column if doesn't exist
+        db.run(`ALTER TABLE user_api_keys ADD COLUMN preferred_model TEXT`, () => {});
+
+        // User API usage tracking table
+        db.run(`
+          CREATE TABLE IF NOT EXISTS user_api_usage (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            provider TEXT NOT NULL,
+            model TEXT NOT NULL,
+            tokens_used INTEGER DEFAULT 0,
+            request_count INTEGER DEFAULT 1,
+            date TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+          )
+        `);
+
         // Create indexes
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_performance_user ON user_performance(user_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_performance_course ON user_performance(user_id, course_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_history_user ON user_history(user_id)`);
-        db.run(`CREATE INDEX IF NOT EXISTS idx_user_interviews_user ON user_interviews(user_id)`, (err) => {
+        db.run(`CREATE INDEX IF NOT EXISTS idx_user_interviews_user ON user_interviews(user_id)`);
+        db.run(`CREATE INDEX IF NOT EXISTS idx_user_api_usage_user_date ON user_api_usage(user_id, date)`, (err) => {
           if (err) {
             reject(err);
           } else {
@@ -613,6 +644,140 @@ function getCourseActivityStats(courseId) {
   });
 }
 
+// User API keys operations
+// Simple obfuscation for API keys (not true encryption - for production use proper encryption)
+function obfuscateKey(key) {
+  if (!key) return null;
+  return Buffer.from(key).toString('base64');
+}
+
+function deobfuscateKey(encoded) {
+  if (!encoded) return null;
+  return Buffer.from(encoded, 'base64').toString('utf8');
+}
+
+function getUserApiKeys(userId) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM user_api_keys WHERE user_id = ?', [userId], (err, row) => {
+      if (err) reject(err);
+      else if (!row) resolve(null);
+      else {
+        resolve({
+          groq_api_key: deobfuscateKey(row.groq_api_key),
+          anthropic_api_key: deobfuscateKey(row.anthropic_api_key),
+          preferred_model: row.preferred_model,
+          updated_at: row.updated_at,
+          // Return masked versions for display
+          groq_configured: !!row.groq_api_key,
+          anthropic_configured: !!row.anthropic_api_key
+        });
+      }
+    });
+  });
+}
+
+function setUserApiKeys(userId, groqKey, anthropicKey, preferredModel) {
+  return new Promise((resolve, reject) => {
+    const obfuscatedGroq = obfuscateKey(groqKey);
+    const obfuscatedAnthropic = obfuscateKey(anthropicKey);
+
+    db.run(
+      `INSERT INTO user_api_keys (user_id, groq_api_key, anthropic_api_key, preferred_model, updated_at)
+       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+       ON CONFLICT(user_id) DO UPDATE SET
+         groq_api_key = COALESCE(?, groq_api_key),
+         anthropic_api_key = COALESCE(?, anthropic_api_key),
+         preferred_model = COALESCE(?, preferred_model),
+         updated_at = CURRENT_TIMESTAMP`,
+      [userId, obfuscatedGroq, obfuscatedAnthropic, preferredModel,
+       obfuscatedGroq, obfuscatedAnthropic, preferredModel],
+      function(err) {
+        if (err) reject(err);
+        else resolve(true);
+      }
+    );
+  });
+}
+
+function deleteUserApiKey(userId, provider) {
+  return new Promise((resolve, reject) => {
+    const column = provider === 'groq' ? 'groq_api_key' : 'anthropic_api_key';
+    db.run(
+      `UPDATE user_api_keys SET ${column} = NULL, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`,
+      [userId],
+      function(err) {
+        if (err) reject(err);
+        else resolve(this.changes > 0);
+      }
+    );
+  });
+}
+
+// API usage tracking
+function trackApiUsage(userId, provider, model, tokensUsed = 0) {
+  const today = new Date().toISOString().split('T')[0];
+  return new Promise((resolve, reject) => {
+    // Try to update existing record for today
+    db.run(
+      `INSERT INTO user_api_usage (user_id, provider, model, tokens_used, request_count, date)
+       VALUES (?, ?, ?, ?, 1, ?)
+       ON CONFLICT(user_id, date) DO UPDATE SET
+         tokens_used = tokens_used + ?,
+         request_count = request_count + 1`,
+      [userId, provider, model, tokensUsed, today, tokensUsed],
+      function(err) {
+        if (err) {
+          // If ON CONFLICT doesn't work (no unique constraint), just insert
+          db.run(
+            'INSERT INTO user_api_usage (user_id, provider, model, tokens_used, date) VALUES (?, ?, ?, ?, ?)',
+            [userId, provider, model, tokensUsed, today],
+            function(err2) {
+              if (err2) reject(err2);
+              else resolve(true);
+            }
+          );
+        } else {
+          resolve(true);
+        }
+      }
+    );
+  });
+}
+
+function getApiUsage(userId, days = 30) {
+  return new Promise((resolve, reject) => {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const startDateStr = startDate.toISOString().split('T')[0];
+
+    db.all(
+      `SELECT date, provider, model, SUM(tokens_used) as tokens, SUM(request_count) as requests
+       FROM user_api_usage
+       WHERE user_id = ? AND date >= ?
+       GROUP BY date, provider, model
+       ORDER BY date DESC`,
+      [userId, startDateStr],
+      (err, rows) => {
+        if (err) reject(err);
+        else {
+          // Aggregate totals
+          const totals = { requests: 0, tokens: 0, byProvider: {} };
+          rows.forEach(row => {
+            totals.requests += row.requests;
+            totals.tokens += row.tokens;
+            if (!totals.byProvider[row.provider]) {
+              totals.byProvider[row.provider] = { requests: 0, tokens: 0 };
+            }
+            totals.byProvider[row.provider].requests += row.requests;
+            totals.byProvider[row.provider].tokens += row.tokens;
+          });
+          resolve({ daily: rows, totals });
+        }
+      }
+    );
+  });
+}
+
 // Get database instance
 function getDb() {
   return db;
@@ -673,5 +838,12 @@ module.exports = {
   findUserByResetToken,
   clearResetToken,
   // Course activity
-  getCourseActivityStats
+  getCourseActivityStats,
+  // User API keys
+  getUserApiKeys,
+  setUserApiKeys,
+  deleteUserApiKey,
+  // API usage tracking
+  trackApiUsage,
+  getApiUsage
 };
