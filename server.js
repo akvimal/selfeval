@@ -12,6 +12,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // Session middleware
+const isProduction = process.env.NODE_ENV === 'production';
+const useSecureCookies = process.env.SECURE_COOKIES === 'true'; // Only enable with HTTPS
+
+if (isProduction && process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1); // Trust first proxy (for nginx/load balancer)
+}
+
 app.use(session({
   store: new SQLiteStore({
     db: 'sessions.db',
@@ -21,7 +28,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: useSecureCookies,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
