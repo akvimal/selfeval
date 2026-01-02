@@ -113,6 +113,20 @@ router.get('/api-usage', async (req, res) => {
   }
 });
 
+// GET /api/settings/learner-features - Get learner-facing feature settings
+router.get('/learner-features', async (req, res) => {
+  try {
+    const allowClearHistory = await getSetting('allow_clear_history');
+
+    res.json({
+      allow_clear_history: allowClearHistory === 'true'
+    });
+  } catch (error) {
+    console.error('Error fetching learner features:', error);
+    res.status(500).json({ error: 'Failed to fetch learner features' });
+  }
+});
+
 // GET /api/settings/available-models - Get available AI models (for user profile)
 router.get('/available-models', async (req, res) => {
   try {

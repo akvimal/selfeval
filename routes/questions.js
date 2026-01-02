@@ -4,7 +4,7 @@ const { requireAuth } = require('../middleware/auth');
 const { getCourse, getTopic } = require('../services/storage');
 const { generateQuestion } = require('../services/groq');
 const { QUESTION_TYPES } = require('../prompts/templates');
-const { getSetting } = require('../services/database');
+const { getSetting, getCachedQuestionForUser, addQuestionToCache } = require('../services/database');
 
 // All question types with labels
 const ALL_QUESTION_TYPES = {
@@ -84,12 +84,35 @@ router.post('/generate', requireAuth, async (req, res) => {
       return res.status(404).json({ error: 'Topic not found' });
     }
 
-    // Generate question with specific subtopic if provided (pass userId for user API keys)
+    // Check cache first for an unanswered question
+    const cachedQuestion = await getCachedQuestionForUser(req.user.id, courseId, topicId, type);
+
+    if (cachedQuestion) {
+      // Return cached question with cacheId
+      const questionData = cachedQuestion.questionData;
+      return res.json({
+        ...questionData,
+        cacheId: cachedQuestion.id,
+        fromCache: true,
+        type: type,
+        topicId: topic.id,
+        topicName: topic.name,
+        courseId: course.id,
+        courseName: course.name
+      });
+    }
+
+    // No cached question available, generate a new one
     const question = await generateQuestion(topic, type, subtopic || null, req.user.id);
+
+    // Save to cache
+    const cacheResult = await addQuestionToCache(courseId, topicId, type, question);
 
     // Add course and topic info to question (ensure they're included)
     res.json({
       ...question,
+      cacheId: cacheResult.id,
+      fromCache: false,
       type: type,
       topicId: topic.id,
       topicName: topic.name,

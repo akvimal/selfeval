@@ -13,7 +13,17 @@ const {
   getInterviews,
   getSetting,
   setSetting,
-  getAllSettings
+  getAllSettings,
+  getAllDisputes,
+  getDisputeById,
+  resolveDispute,
+  updateHistoryResult,
+  updatePerformanceScore,
+  getHistoryById,
+  getCacheStats,
+  getAllCachedQuestions,
+  deleteCachedQuestion,
+  clearQuestionCache
 } = require('../services/database');
 const { AVAILABLE_MODELS, DEFAULT_MODEL } = require('../services/groq');
 
@@ -200,23 +210,93 @@ router.get('/course-performance', async (req, res) => {
     const result = [];
 
     for (const course of coursesData.courses) {
+      // Build topic name map
+      const topicMap = {};
+      if (course.topics) {
+        course.topics.forEach(t => { topicMap[t.id] = t.name; });
+      }
+
       const coursePerformance = {
         courseId: course.id,
         courseName: course.name,
-        learners: []
+        topics: course.topics || [],
+        learners: [],
+        // Course-level aggregates
+        summary: {
+          totalQuestions: 0,
+          totalCorrect: 0,
+          averageScore: 0,
+          activeLearners: 0,
+          byTopic: {},
+          byType: {}
+        }
       };
 
+      let courseTotalScore = 0;
+
       for (const learner of learners) {
-        const stats = await getPerformanceStats(learner.id);
         const courseRecords = await getPerformanceByCourse(learner.id, course.id);
 
         if (courseRecords.length > 0) {
-          // Calculate course-specific stats
+          // Calculate learner's course-specific stats
           let correct = 0;
           let totalScore = 0;
+          const learnerByTopic = {};
+          const learnerByType = {};
+
           courseRecords.forEach(r => {
             if (r.is_correct) correct++;
             totalScore += r.score;
+
+            // Topic breakdown for learner
+            if (!learnerByTopic[r.topic_id]) {
+              learnerByTopic[r.topic_id] = {
+                name: topicMap[r.topic_id] || r.topic_id,
+                attempts: 0,
+                correct: 0,
+                totalScore: 0
+              };
+            }
+            learnerByTopic[r.topic_id].attempts++;
+            if (r.is_correct) learnerByTopic[r.topic_id].correct++;
+            learnerByTopic[r.topic_id].totalScore += r.score;
+
+            // Type breakdown for learner
+            if (!learnerByType[r.question_type]) {
+              learnerByType[r.question_type] = { attempts: 0, correct: 0, totalScore: 0 };
+            }
+            learnerByType[r.question_type].attempts++;
+            if (r.is_correct) learnerByType[r.question_type].correct++;
+            learnerByType[r.question_type].totalScore += r.score;
+
+            // Course-level topic aggregation
+            if (!coursePerformance.summary.byTopic[r.topic_id]) {
+              coursePerformance.summary.byTopic[r.topic_id] = {
+                name: topicMap[r.topic_id] || r.topic_id,
+                attempts: 0,
+                correct: 0,
+                totalScore: 0
+              };
+            }
+            coursePerformance.summary.byTopic[r.topic_id].attempts++;
+            if (r.is_correct) coursePerformance.summary.byTopic[r.topic_id].correct++;
+            coursePerformance.summary.byTopic[r.topic_id].totalScore += r.score;
+
+            // Course-level type aggregation
+            if (!coursePerformance.summary.byType[r.question_type]) {
+              coursePerformance.summary.byType[r.question_type] = { attempts: 0, correct: 0, totalScore: 0 };
+            }
+            coursePerformance.summary.byType[r.question_type].attempts++;
+            if (r.is_correct) coursePerformance.summary.byType[r.question_type].correct++;
+            coursePerformance.summary.byType[r.question_type].totalScore += r.score;
+          });
+
+          // Calculate averages for learner topic/type breakdown
+          Object.values(learnerByTopic).forEach(t => {
+            t.averageScore = Math.round(t.totalScore / t.attempts);
+          });
+          Object.values(learnerByType).forEach(t => {
+            t.averageScore = Math.round(t.totalScore / t.attempts);
           });
 
           coursePerformance.learners.push({
@@ -226,13 +306,31 @@ router.get('/course-performance', async (req, res) => {
             attempts: courseRecords.length,
             correct: correct,
             averageScore: Math.round(totalScore / courseRecords.length),
-            lastActivity: courseRecords[0]?.created_at
+            lastActivity: courseRecords[0]?.created_at,
+            byTopic: learnerByTopic,
+            byType: learnerByType
           });
+
+          // Update course totals
+          coursePerformance.summary.totalQuestions += courseRecords.length;
+          coursePerformance.summary.totalCorrect += correct;
+          courseTotalScore += totalScore;
         }
       }
 
-      // Only include courses with at least one learner activity
+      // Calculate course-level averages
       if (coursePerformance.learners.length > 0) {
+        coursePerformance.summary.activeLearners = coursePerformance.learners.length;
+        coursePerformance.summary.averageScore = Math.round(courseTotalScore / coursePerformance.summary.totalQuestions);
+
+        // Calculate averages for topic/type summaries
+        Object.values(coursePerformance.summary.byTopic).forEach(t => {
+          t.averageScore = Math.round(t.totalScore / t.attempts);
+        });
+        Object.values(coursePerformance.summary.byType).forEach(t => {
+          t.averageScore = Math.round(t.totalScore / t.attempts);
+        });
+
         result.push(coursePerformance);
       }
     }
@@ -325,6 +423,10 @@ router.put('/settings', async (req, res) => {
       await setSetting('require_user_api_keys', req.body.require_user_api_keys ? 'true' : 'false');
     }
 
+    if (req.body.allow_clear_history !== undefined) {
+      await setSetting('allow_clear_history', req.body.allow_clear_history ? 'true' : 'false');
+    }
+
     // Return updated settings
     const settings = await getAllSettings();
     const currentModelKey = settings.ai_model || DEFAULT_MODEL;
@@ -341,6 +443,165 @@ router.put('/settings', async (req, res) => {
   } catch (error) {
     console.error('Error updating settings:', error);
     res.status(500).json({ error: 'Failed to update settings' });
+  }
+});
+
+// GET /api/admin/disputes - Get all disputes
+router.get('/disputes', async (req, res) => {
+  try {
+    const status = req.query.status || null;
+    const disputes = await getAllDisputes(status);
+    res.json({ disputes });
+  } catch (error) {
+    console.error('Error fetching disputes:', error);
+    res.status(500).json({ error: 'Failed to fetch disputes' });
+  }
+});
+
+// GET /api/admin/disputes/:id - Get a specific dispute
+router.get('/disputes/:id', async (req, res) => {
+  try {
+    const disputeId = parseInt(req.params.id);
+    const dispute = await getDisputeById(disputeId);
+
+    if (!dispute) {
+      return res.status(404).json({ error: 'Dispute not found' });
+    }
+
+    res.json({ dispute });
+  } catch (error) {
+    console.error('Error fetching dispute:', error);
+    res.status(500).json({ error: 'Failed to fetch dispute' });
+  }
+});
+
+// PUT /api/admin/disputes/:id/approve - Approve a dispute and re-evaluate
+router.put('/disputes/:id/approve', async (req, res) => {
+  try {
+    const disputeId = parseInt(req.params.id);
+    const adminId = req.user.id;
+
+    const dispute = await getDisputeById(disputeId);
+    if (!dispute) {
+      return res.status(404).json({ error: 'Dispute not found' });
+    }
+
+    if (dispute.status !== 'pending') {
+      return res.status(400).json({ error: 'This dispute has already been resolved' });
+    }
+
+    // Get the history record for re-evaluation
+    const history = await getHistoryById(dispute.history_id);
+    if (!history) {
+      return res.status(404).json({ error: 'Question history not found' });
+    }
+
+    // Re-evaluate the answer with AI
+    const { evaluateAnswer } = require('../services/groq');
+    const { getCourse } = require('../services/storage');
+
+    const course = await getCourse(history.course_id);
+    const topic = course?.topics?.find(t => t.id === history.topic_id);
+
+    const newResult = await evaluateAnswer(
+      history.question_data,
+      history.user_answer,
+      topic?.name || history.topic_id,
+      req.user.id, // Use admin's ID for API tracking
+      `Re-evaluation requested by learner. Original feedback: ${history.result.feedback || 'N/A'}. Learner's dispute reason: ${dispute.dispute_reason}`
+    );
+
+    // Update the history with new result
+    await updateHistoryResult(dispute.history_id, newResult);
+
+    // Update performance score if score changed
+    const newScore = newResult.score || 0;
+    const isCorrect = newScore >= 70;
+    await updatePerformanceScore(dispute.history_id, newScore, isCorrect);
+
+    // Resolve the dispute
+    await resolveDispute(disputeId, 'approved', adminId, 'Re-evaluated based on your feedback.', newScore);
+
+    res.json({
+      message: 'Dispute approved and answer re-evaluated',
+      newScore,
+      newResult
+    });
+  } catch (error) {
+    console.error('Error approving dispute:', error);
+    res.status(500).json({ error: 'Failed to approve dispute' });
+  }
+});
+
+// PUT /api/admin/disputes/:id/disapprove - Disapprove a dispute
+router.put('/disputes/:id/disapprove', async (req, res) => {
+  try {
+    const disputeId = parseInt(req.params.id);
+    const adminId = req.user.id;
+    const { adminComments } = req.body;
+
+    if (!adminComments || adminComments.trim().length < 10) {
+      return res.status(400).json({ error: 'Please provide a reason for disapproval (at least 10 characters)' });
+    }
+
+    const dispute = await getDisputeById(disputeId);
+    if (!dispute) {
+      return res.status(404).json({ error: 'Dispute not found' });
+    }
+
+    if (dispute.status !== 'pending') {
+      return res.status(400).json({ error: 'This dispute has already been resolved' });
+    }
+
+    // Resolve the dispute as disapproved
+    await resolveDispute(disputeId, 'disapproved', adminId, adminComments.trim(), null);
+
+    res.json({
+      message: 'Dispute disapproved',
+      adminComments: adminComments.trim()
+    });
+  } catch (error) {
+    console.error('Error disapproving dispute:', error);
+    res.status(500).json({ error: 'Failed to disapprove dispute' });
+  }
+});
+
+// GET /api/admin/cache - Get cache statistics and questions
+router.get('/cache', async (req, res) => {
+  try {
+    const stats = await getCacheStats();
+    const questions = await getAllCachedQuestions();
+    res.json({ stats, questions });
+  } catch (error) {
+    console.error('Error fetching cache:', error);
+    res.status(500).json({ error: 'Failed to fetch cache' });
+  }
+});
+
+// DELETE /api/admin/cache/:id - Delete a specific cached question
+router.delete('/cache/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const deleted = await deleteCachedQuestion(id);
+    if (!deleted) {
+      return res.status(404).json({ error: 'Cached question not found' });
+    }
+    res.json({ message: 'Cached question deleted' });
+  } catch (error) {
+    console.error('Error deleting cached question:', error);
+    res.status(500).json({ error: 'Failed to delete cached question' });
+  }
+});
+
+// DELETE /api/admin/cache - Clear all cached questions
+router.delete('/cache', async (req, res) => {
+  try {
+    const { courseId, topicId } = req.query;
+    const count = await clearQuestionCache(courseId || null, topicId || null);
+    res.json({ message: `Cleared ${count} cached questions` });
+  } catch (error) {
+    console.error('Error clearing cache:', error);
+    res.status(500).json({ error: 'Failed to clear cache' });
   }
 });
 

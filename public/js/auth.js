@@ -70,7 +70,7 @@ async function updateNavbar(navItemsId = 'nav-items') {
     navItems.innerHTML = `
       <a class="nav-link" href="/">Courses</a>
       <a class="nav-link" href="/manage">Manage</a>
-      <a class="nav-link" href="/admin">Users</a>
+      <a class="nav-link" href="/admin">Admin</a>
       <a class="nav-link" href="/profile">${escapeHtml(user.name)}</a>
       <a class="nav-link" href="#" onclick="logout(); return false;">Logout</a>
     `;

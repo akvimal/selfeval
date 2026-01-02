@@ -42,10 +42,11 @@ router.post('/', requireAuth, async (req, res) => {
     );
 
     // Save to history for future reference (user-specific in SQLite)
-    await addHistory(userId, courseId, topicId, type, questionData, userAnswer, result);
+    const historyResult = await addHistory(userId, courseId, topicId, type, questionData, userAnswer, result);
 
     res.json({
       ...result,
+      historyId: historyResult.id,
       questionType: type,
       courseId,
       courseName,

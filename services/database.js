@@ -128,11 +128,50 @@ function initDatabase() {
           )
         `);
 
+        // Disputes table for learner-disputed AI evaluations
+        db.run(`
+          CREATE TABLE IF NOT EXISTS disputes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            history_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            course_id TEXT NOT NULL,
+            topic_id TEXT NOT NULL,
+            dispute_reason TEXT NOT NULL,
+            status TEXT CHECK(status IN ('pending', 'approved', 'disapproved')) NOT NULL DEFAULT 'pending',
+            admin_comments TEXT,
+            original_score INTEGER NOT NULL,
+            new_score INTEGER,
+            resolved_by INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            resolved_at DATETIME,
+            FOREIGN KEY (history_id) REFERENCES user_history(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (resolved_by) REFERENCES users(id)
+          )
+        `);
+
+        // Questions cache table - stores AI-generated questions for reuse
+        db.run(`
+          CREATE TABLE IF NOT EXISTS questions_cache (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            course_id TEXT NOT NULL,
+            topic_id TEXT NOT NULL,
+            question_type TEXT NOT NULL,
+            question_data TEXT NOT NULL,
+            question_hash TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
         // Create indexes
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_performance_user ON user_performance(user_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_performance_course ON user_performance(user_id, course_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_history_user ON user_history(user_id)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_interviews_user ON user_interviews(user_id)`);
+        db.run(`CREATE INDEX IF NOT EXISTS idx_disputes_user ON disputes(user_id)`);
+        db.run(`CREATE INDEX IF NOT EXISTS idx_disputes_status ON disputes(status)`);
+        db.run(`CREATE INDEX IF NOT EXISTS idx_questions_cache_lookup ON questions_cache(course_id, topic_id, question_type)`);
+        db.run(`CREATE INDEX IF NOT EXISTS idx_questions_cache_hash ON questions_cache(question_hash)`);
         db.run(`CREATE INDEX IF NOT EXISTS idx_user_api_usage_user_date ON user_api_usage(user_id, date)`, (err) => {
           if (err) {
             reject(err);
@@ -778,6 +817,348 @@ function getApiUsage(userId, days = 30) {
   });
 }
 
+// Dispute operations
+function createDispute(userId, historyId, courseId, topicId, disputeReason, originalScore) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `INSERT INTO disputes (user_id, history_id, course_id, topic_id, dispute_reason, original_score)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [userId, historyId, courseId, topicId, disputeReason, originalScore],
+      function(err) {
+        if (err) reject(err);
+        else resolve({ id: this.lastID });
+      }
+    );
+  });
+}
+
+function getDisputeByHistoryId(historyId) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM disputes WHERE history_id = ?', [historyId], (err, row) => {
+      if (err) reject(err);
+      else resolve(row);
+    });
+  });
+}
+
+function getUserDisputes(userId, status = null) {
+  return new Promise((resolve, reject) => {
+    let query = `
+      SELECT d.*, h.question_data, h.user_answer, h.result
+      FROM disputes d
+      JOIN user_history h ON d.history_id = h.id
+      WHERE d.user_id = ?
+    `;
+    const params = [userId];
+
+    if (status) {
+      query += ' AND d.status = ?';
+      params.push(status);
+    }
+
+    query += ' ORDER BY d.created_at DESC';
+
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else {
+        const parsed = rows.map(row => ({
+          ...row,
+          question_data: JSON.parse(row.question_data),
+          result: JSON.parse(row.result)
+        }));
+        resolve(parsed);
+      }
+    });
+  });
+}
+
+function getAllDisputes(status = null) {
+  return new Promise((resolve, reject) => {
+    let query = `
+      SELECT d.*, h.question_data, h.user_answer, h.result, u.name as user_name, u.email as user_email
+      FROM disputes d
+      JOIN user_history h ON d.history_id = h.id
+      JOIN users u ON d.user_id = u.id
+    `;
+    const params = [];
+
+    if (status) {
+      query += ' WHERE d.status = ?';
+      params.push(status);
+    }
+
+    query += ' ORDER BY d.created_at DESC';
+
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else {
+        const parsed = rows.map(row => ({
+          ...row,
+          question_data: JSON.parse(row.question_data),
+          result: JSON.parse(row.result)
+        }));
+        resolve(parsed);
+      }
+    });
+  });
+}
+
+function resolveDispute(disputeId, status, adminId, adminComments = null, newScore = null) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      `UPDATE disputes SET
+        status = ?,
+        admin_comments = ?,
+        new_score = ?,
+        resolved_by = ?,
+        resolved_at = CURRENT_TIMESTAMP
+       WHERE id = ?`,
+      [status, adminComments, newScore, adminId, disputeId],
+      function(err) {
+        if (err) reject(err);
+        else resolve(this.changes > 0);
+      }
+    );
+  });
+}
+
+function getDisputeById(disputeId) {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `SELECT d.*, h.question_data, h.user_answer, h.result, u.name as user_name, u.email as user_email
+       FROM disputes d
+       JOIN user_history h ON d.history_id = h.id
+       JOIN users u ON d.user_id = u.id
+       WHERE d.id = ?`,
+      [disputeId],
+      (err, row) => {
+        if (err) reject(err);
+        else if (!row) resolve(null);
+        else {
+          resolve({
+            ...row,
+            question_data: JSON.parse(row.question_data),
+            result: JSON.parse(row.result)
+          });
+        }
+      }
+    );
+  });
+}
+
+function updateHistoryResult(historyId, newResult) {
+  return new Promise((resolve, reject) => {
+    db.run(
+      'UPDATE user_history SET result = ? WHERE id = ?',
+      [JSON.stringify(newResult), historyId],
+      function(err) {
+        if (err) reject(err);
+        else resolve(this.changes > 0);
+      }
+    );
+  });
+}
+
+function updatePerformanceScore(historyId, newScore, isCorrect) {
+  return new Promise((resolve, reject) => {
+    // First get the history record to find performance record
+    db.get('SELECT * FROM user_history WHERE id = ?', [historyId], (err, history) => {
+      if (err) return reject(err);
+      if (!history) return resolve(false);
+
+      // Update the corresponding performance record (most recent matching one)
+      db.run(
+        `UPDATE user_performance SET score = ?, is_correct = ?
+         WHERE user_id = ? AND course_id = ? AND topic_id = ? AND question_type = ?
+         AND id = (
+           SELECT id FROM user_performance
+           WHERE user_id = ? AND course_id = ? AND topic_id = ? AND question_type = ?
+           ORDER BY created_at DESC LIMIT 1
+         )`,
+        [newScore, isCorrect ? 1 : 0,
+         history.user_id, history.course_id, history.topic_id, history.question_type,
+         history.user_id, history.course_id, history.topic_id, history.question_type],
+        function(err) {
+          if (err) reject(err);
+          else resolve(this.changes > 0);
+        }
+      );
+    });
+  });
+}
+
+function getHistoryById(historyId) {
+  return new Promise((resolve, reject) => {
+    db.get('SELECT * FROM user_history WHERE id = ?', [historyId], (err, row) => {
+      if (err) reject(err);
+      else if (!row) resolve(null);
+      else {
+        resolve({
+          ...row,
+          question_data: JSON.parse(row.question_data),
+          result: JSON.parse(row.result)
+        });
+      }
+    });
+  });
+}
+
+// Questions cache operations
+function addQuestionToCache(courseId, topicId, questionType, questionData) {
+  return new Promise((resolve, reject) => {
+    // Create a hash from the question text to detect duplicates
+    const questionHash = require('crypto')
+      .createHash('md5')
+      .update(questionData.question || '')
+      .digest('hex');
+
+    // Check if this exact question already exists
+    db.get(
+      'SELECT id FROM questions_cache WHERE question_hash = ?',
+      [questionHash],
+      (err, existing) => {
+        if (err) return reject(err);
+        if (existing) {
+          // Question already exists, return existing id
+          return resolve({ id: existing.id, cached: true });
+        }
+
+        // Insert new question
+        db.run(
+          `INSERT INTO questions_cache (course_id, topic_id, question_type, question_data, question_hash)
+           VALUES (?, ?, ?, ?, ?)`,
+          [courseId, topicId, questionType, JSON.stringify(questionData), questionHash],
+          function(err) {
+            if (err) reject(err);
+            else resolve({ id: this.lastID, cached: false });
+          }
+        );
+      }
+    );
+  });
+}
+
+function getCachedQuestionForUser(userId, courseId, topicId, questionType = null) {
+  return new Promise((resolve, reject) => {
+    // Find a cached question that this user hasn't answered yet
+    let query = `
+      SELECT qc.* FROM questions_cache qc
+      WHERE qc.course_id = ? AND qc.topic_id = ?
+        AND qc.id NOT IN (
+          SELECT DISTINCT json_extract(uh.question_data, '$.cacheId')
+          FROM user_history uh
+          WHERE uh.user_id = ? AND uh.course_id = ? AND uh.topic_id = ?
+            AND json_extract(uh.question_data, '$.cacheId') IS NOT NULL
+        )
+    `;
+    const params = [courseId, topicId, userId, courseId, topicId];
+
+    if (questionType) {
+      query += ' AND qc.question_type = ?';
+      params.push(questionType);
+    }
+
+    query += ' ORDER BY RANDOM() LIMIT 1';
+
+    db.get(query, params, (err, row) => {
+      if (err) reject(err);
+      else if (!row) resolve(null);
+      else {
+        resolve({
+          id: row.id,
+          courseId: row.course_id,
+          topicId: row.topic_id,
+          questionType: row.question_type,
+          questionData: JSON.parse(row.question_data),
+          createdAt: row.created_at
+        });
+      }
+    });
+  });
+}
+
+function getCacheStats(courseId = null) {
+  return new Promise((resolve, reject) => {
+    let query = `
+      SELECT course_id, topic_id, question_type, COUNT(*) as count
+      FROM questions_cache
+    `;
+    const params = [];
+
+    if (courseId) {
+      query += ' WHERE course_id = ?';
+      params.push(courseId);
+    }
+
+    query += ' GROUP BY course_id, topic_id, question_type';
+
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+}
+
+function getAllCachedQuestions(courseId = null, topicId = null) {
+  return new Promise((resolve, reject) => {
+    let query = 'SELECT * FROM questions_cache WHERE 1=1';
+    const params = [];
+
+    if (courseId) {
+      query += ' AND course_id = ?';
+      params.push(courseId);
+    }
+    if (topicId) {
+      query += ' AND topic_id = ?';
+      params.push(topicId);
+    }
+
+    query += ' ORDER BY created_at DESC';
+
+    db.all(query, params, (err, rows) => {
+      if (err) reject(err);
+      else {
+        // Parse question_data JSON for each row
+        const questions = rows.map(row => ({
+          ...row,
+          questionData: JSON.parse(row.question_data)
+        }));
+        resolve(questions);
+      }
+    });
+  });
+}
+
+function deleteCachedQuestion(id) {
+  return new Promise((resolve, reject) => {
+    db.run('DELETE FROM questions_cache WHERE id = ?', [id], function(err) {
+      if (err) reject(err);
+      else resolve(this.changes > 0);
+    });
+  });
+}
+
+function clearQuestionCache(courseId = null, topicId = null) {
+  return new Promise((resolve, reject) => {
+    let query = 'DELETE FROM questions_cache WHERE 1=1';
+    const params = [];
+
+    if (courseId) {
+      query += ' AND course_id = ?';
+      params.push(courseId);
+    }
+    if (topicId) {
+      query += ' AND topic_id = ?';
+      params.push(topicId);
+    }
+
+    db.run(query, params, function(err) {
+      if (err) reject(err);
+      else resolve(this.changes);
+    });
+  });
+}
+
 // Get database instance
 function getDb() {
   return db;
@@ -845,5 +1226,22 @@ module.exports = {
   deleteUserApiKey,
   // API usage tracking
   trackApiUsage,
-  getApiUsage
+  getApiUsage,
+  // Dispute operations
+  createDispute,
+  getDisputeByHistoryId,
+  getUserDisputes,
+  getAllDisputes,
+  resolveDispute,
+  getDisputeById,
+  updateHistoryResult,
+  updatePerformanceScore,
+  getHistoryById,
+  // Questions cache operations
+  addQuestionToCache,
+  getCachedQuestionForUser,
+  getCacheStats,
+  getAllCachedQuestions,
+  deleteCachedQuestion,
+  clearQuestionCache
 };

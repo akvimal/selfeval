@@ -946,6 +946,8 @@ function getUserAnswer() {
   }
 }
 
+let lastResultData = null; // Store last result for dispute
+
 async function submitAnswer() {
   const userAnswer = getUserAnswer();
 
@@ -966,6 +968,7 @@ async function submitAnswer() {
     if (!response.ok) throw new Error('Failed to evaluate answer');
 
     const result = await response.json();
+    lastResultData = { ...result, userAnswer };
     displayResult(result);
   } catch (error) {
     console.error('Error evaluating answer:', error);
@@ -1085,7 +1088,85 @@ function displayResult(result) {
     document.getElementById('missing-list').innerHTML = result.missingPoints.map(m => `<li>${m}</li>`).join('');
   }
 
+  // Show dispute button for AI-evaluated questions (concept, comparison, fillblank)
+  const disputeContainer = document.getElementById('result-dispute-container');
+  if (disputeContainer) {
+    const disputeTypes = ['concept', 'comparison', 'fillblank'];
+    if (result.historyId && disputeTypes.includes(result.questionType)) {
+      disputeContainer.innerHTML = `
+        <div class="mt-3 pt-3 border-top">
+          <p class="text-muted small mb-2">Think the AI evaluation was unfair?</p>
+          <button class="btn btn-outline-warning btn-sm" onclick="showResultDisputeForm()">
+            Dispute AI Evaluation
+          </button>
+          <div id="result-dispute-form" class="mt-3" style="display: none;">
+            <textarea id="result-dispute-reason" class="form-control mb-2" rows="3"
+              placeholder="Explain why you believe your answer deserves a higher score..."></textarea>
+            <div class="d-flex gap-2">
+              <button class="btn btn-warning btn-sm" onclick="submitResultDispute()">Submit Dispute</button>
+              <button class="btn btn-secondary btn-sm" onclick="hideResultDisputeForm()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      `;
+      disputeContainer.style.display = 'block';
+    } else {
+      disputeContainer.style.display = 'none';
+      disputeContainer.innerHTML = '';
+    }
+  }
+
   resultSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showResultDisputeForm() {
+  document.getElementById('result-dispute-form').style.display = 'block';
+}
+
+function hideResultDisputeForm() {
+  document.getElementById('result-dispute-form').style.display = 'none';
+  document.getElementById('result-dispute-reason').value = '';
+}
+
+async function submitResultDispute() {
+  if (!lastResultData || !lastResultData.historyId) {
+    alert('Unable to submit dispute. Please try again.');
+    return;
+  }
+
+  const reason = document.getElementById('result-dispute-reason').value.trim();
+  if (reason.length < 10) {
+    alert('Please provide a more detailed explanation (at least 10 characters).');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/disputes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        historyId: lastResultData.historyId,
+        disputeReason: reason
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Dispute submitted successfully. An admin will review your request.');
+      document.getElementById('result-dispute-container').innerHTML = `
+        <div class="alert alert-warning mt-3">
+          <strong>Dispute Submitted</strong><br>
+          <small>Your dispute is pending review. Check the History tab for updates.</small>
+        </div>
+      `;
+    } else {
+      alert(data.error || 'Failed to submit dispute');
+    }
+  } catch (error) {
+    console.error('Error submitting dispute:', error);
+    alert('Failed to submit dispute. Please try again.');
+  }
 }
 
 // ============================================================
@@ -1107,14 +1188,40 @@ async function initHistoryTab() {
   // Setup event listeners for Q&A history
   filterTopic.addEventListener('change', renderHistory);
   document.getElementById('filter-result').addEventListener('change', renderHistory);
-  document.getElementById('clear-course-history-btn').addEventListener('click', clearCourseHistory);
   document.getElementById('retry-btn').addEventListener('click', retryQuestion);
+
+  // Check if clear history is allowed and setup button accordingly
+  const clearHistoryBtn = document.getElementById('clear-course-history-btn');
+  try {
+    const response = await fetch('/api/settings/learner-features');
+    if (response.ok) {
+      const features = await response.json();
+      if (features.allow_clear_history) {
+        clearHistoryBtn.style.display = 'inline-block';
+        clearHistoryBtn.addEventListener('click', clearCourseHistory);
+      } else {
+        clearHistoryBtn.style.display = 'none';
+      }
+    } else {
+      // Default to hidden if can't fetch settings
+      clearHistoryBtn.style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Failed to fetch learner features:', error);
+    // Default to hidden on error
+    clearHistoryBtn.style.display = 'none';
+  }
 
   // Setup event listener for interview history sub-tab
   document.getElementById('interview-history-tab').addEventListener('shown.bs.tab', loadPastInterviews);
   document.getElementById('clear-interview-history-btn').addEventListener('click', clearInterviewHistory);
 
+  // Setup event listener for disputes sub-tab
+  document.getElementById('disputes-tab').addEventListener('shown.bs.tab', loadDisputes);
+  document.getElementById('dispute-filter').addEventListener('change', loadDisputes);
+
   await loadHistoryData();
+  await loadDisputesBadge();
 }
 
 async function loadHistoryData() {
@@ -1183,9 +1290,9 @@ function renderHistory() {
               <p class="mb-2">${item.question.question}</p>
               <small class="text-muted">${dateStr}</small>
             </div>
-            <div class="text-end">
+            <div class="d-flex align-items-center gap-2 ms-3">
               <span class="badge ${item.result.isCorrect ? 'bg-success' : 'bg-danger'} fs-6">${item.result.score}%</span>
-              <button class="btn btn-sm btn-outline-primary ms-2 view-details-btn" data-id="${item.id}">Details</button>
+              <button class="btn btn-sm btn-outline-primary view-details-btn" data-id="${item.id}">Details</button>
             </div>
           </div>
         </div>
@@ -1200,14 +1307,31 @@ function renderHistory() {
   });
 }
 
-function showQuestionDetails(id) {
-  const item = historyData.find(q => q.id === id);
+async function showQuestionDetails(id) {
+  const item = historyData.find(q => q.id == id);
   if (!item) return;
 
   window.selectedHistoryQuestion = item;
 
   const q = item.question;
   const r = item.result;
+
+  // Check if this question type can be disputed
+  const disputableTypes = ['concept', 'comparison', 'fillblank'];
+  const canDispute = disputableTypes.includes(q.type);
+
+  // Check if a dispute already exists
+  let disputeInfo = null;
+  if (canDispute) {
+    try {
+      const res = await fetch(`/api/disputes/check/${item.id}`);
+      if (res.ok) {
+        disputeInfo = await res.json();
+      }
+    } catch (e) {
+      console.error('Failed to check dispute status:', e);
+    }
+  }
 
   let answerSection = '';
 
@@ -1251,6 +1375,47 @@ function showQuestionDetails(id) {
     feedbackSection += `<h6 class="text-warning">Areas to improve:</h6><ul>${r.missingPoints.map(m => `<li>${m}</li>`).join('')}</ul>`;
   }
 
+  // Build dispute section
+  let disputeSection = '';
+  if (canDispute) {
+    if (disputeInfo?.hasDispute) {
+      const d = disputeInfo.dispute;
+      const statusBadge = d.status === 'pending' ? 'bg-warning' : d.status === 'approved' ? 'bg-success' : 'bg-danger';
+      const statusText = d.status.charAt(0).toUpperCase() + d.status.slice(1);
+      disputeSection = `
+        <div class="alert alert-secondary mt-3">
+          <h6>Dispute Status: <span class="badge ${statusBadge}">${statusText}</span></h6>
+          <p class="mb-1"><strong>Your reason:</strong> ${d.dispute_reason}</p>
+          ${d.admin_comments ? `<p class="mb-1"><strong>Admin response:</strong> ${d.admin_comments}</p>` : ''}
+          ${d.new_score !== null ? `<p class="mb-0"><strong>New score:</strong> ${d.new_score}%</p>` : ''}
+        </div>
+      `;
+    } else {
+      disputeSection = `
+        <div class="mt-3 pt-3 border-top">
+          <button class="btn btn-outline-warning btn-sm" onclick="showDisputeForm(${item.id})">
+            Dispute AI Evaluation
+          </button>
+          <small class="text-muted ms-2">Think the AI got it wrong? Submit a dispute for review.</small>
+        </div>
+        <div id="dispute-form-${item.id}" class="mt-3" style="display: none;">
+          <div class="card border-warning">
+            <div class="card-body">
+              <h6 class="card-title">Submit Dispute</h6>
+              <p class="text-muted small">Explain why you believe the AI evaluation was incorrect.</p>
+              <textarea id="dispute-reason-${item.id}" class="form-control mb-2" rows="3"
+                placeholder="Please explain why you think your answer deserves a better score..."></textarea>
+              <div class="d-flex gap-2">
+                <button class="btn btn-warning btn-sm" onclick="submitDispute(${item.id})">Submit Dispute</button>
+                <button class="btn btn-secondary btn-sm" onclick="hideDisputeForm(${item.id})">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
   document.getElementById('modal-content').innerHTML = `
     <div class="mb-3">
       <span class="badge ${r.isCorrect ? 'bg-success' : 'bg-danger'}">${r.isCorrect ? 'Correct' : 'Incorrect'}</span>
@@ -1264,10 +1429,50 @@ function showQuestionDetails(id) {
     <h6>Explanation:</h6>
     <div class="alert alert-info">${r.feedback || q.explanation || 'No explanation available.'}</div>
     ${feedbackSection}
+    ${disputeSection}
   `;
 
   const modal = new bootstrap.Modal(document.getElementById('questionModal'));
   modal.show();
+}
+
+function showDisputeForm(historyId) {
+  document.getElementById(`dispute-form-${historyId}`).style.display = 'block';
+}
+
+function hideDisputeForm(historyId) {
+  document.getElementById(`dispute-form-${historyId}`).style.display = 'none';
+}
+
+async function submitDispute(historyId) {
+  const reasonEl = document.getElementById(`dispute-reason-${historyId}`);
+  const reason = reasonEl.value.trim();
+
+  if (reason.length < 10) {
+    alert('Please provide a more detailed explanation (at least 10 characters).');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/disputes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ historyId, disputeReason: reason })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert('Dispute submitted successfully! An admin will review it.');
+      // Refresh the modal to show dispute status
+      showQuestionDetails(historyId);
+    } else {
+      alert(data.error || 'Failed to submit dispute');
+    }
+  } catch (error) {
+    console.error('Error submitting dispute:', error);
+    alert('Failed to submit dispute. Please try again.');
+  }
 }
 
 function retryQuestion() {
@@ -1292,6 +1497,112 @@ async function clearCourseHistory() {
     console.error('Failed to clear history:', error);
     alert('Failed to clear history');
   }
+}
+
+// ============================================================
+// DISPUTES
+// ============================================================
+
+let disputesData = [];
+
+async function loadDisputesBadge() {
+  try {
+    const response = await fetch('/api/disputes?status=pending');
+    if (response.ok) {
+      const data = await response.json();
+      const pendingCount = data.disputes.length;
+      const badge = document.getElementById('disputes-badge');
+      if (pendingCount > 0) {
+        badge.textContent = pendingCount;
+        badge.style.display = 'inline';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load disputes badge:', error);
+  }
+}
+
+async function loadDisputes() {
+  const container = document.getElementById('disputes-list');
+  const filter = document.getElementById('dispute-filter').value;
+
+  container.innerHTML = '<p class="text-muted text-center py-3">Loading disputes...</p>';
+
+  try {
+    const url = filter ? `/api/disputes?status=${filter}` : '/api/disputes';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to load disputes');
+
+    const data = await response.json();
+    disputesData = data.disputes || [];
+
+    renderDisputes();
+  } catch (error) {
+    console.error('Failed to load disputes:', error);
+    container.innerHTML = '<div class="alert alert-danger">Failed to load disputes</div>';
+  }
+}
+
+function renderDisputes() {
+  const container = document.getElementById('disputes-list');
+
+  if (disputesData.length === 0) {
+    container.innerHTML = '<p class="text-muted text-center py-3">No disputes found</p>';
+    return;
+  }
+
+  const html = disputesData.map(d => {
+    const statusBadge = d.status === 'pending' ? 'bg-warning text-dark' :
+                        d.status === 'approved' ? 'bg-success' : 'bg-danger';
+    const statusText = d.status.charAt(0).toUpperCase() + d.status.slice(1);
+    const dateStr = new Date(d.created_at).toLocaleDateString();
+    const q = d.question_data;
+
+    return `
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <span class="badge ${statusBadge} me-2">${statusText}</span>
+              <span class="badge bg-secondary me-2">${TYPE_LABELS[q.type] || q.type}</span>
+              <small class="text-muted">${dateStr}</small>
+            </div>
+            <div>
+              <span class="badge bg-dark">Original: ${d.original_score}%</span>
+              ${d.new_score !== null ? `<span class="badge bg-success ms-1">New: ${d.new_score}%</span>` : ''}
+            </div>
+          </div>
+
+          <h6 class="mb-2">${q.question}</h6>
+
+          <div class="bg-light p-2 rounded mb-2">
+            <small class="text-muted">Your answer:</small>
+            <p class="mb-0 small">${d.user_answer}</p>
+          </div>
+
+          <div class="bg-warning bg-opacity-10 p-2 rounded mb-2">
+            <small class="text-muted">Your dispute reason:</small>
+            <p class="mb-0 small">${d.dispute_reason}</p>
+          </div>
+
+          ${d.admin_comments ? `
+            <div class="bg-info bg-opacity-10 p-2 rounded">
+              <small class="text-muted">Admin response:</small>
+              <p class="mb-0 small">${d.admin_comments}</p>
+            </div>
+          ` : ''}
+
+          ${d.status !== 'pending' && d.resolved_at ? `
+            <small class="text-muted d-block mt-2">Resolved on ${new Date(d.resolved_at).toLocaleDateString()}</small>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
 }
 
 // ============================================================

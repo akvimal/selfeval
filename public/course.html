@@ -371,6 +371,9 @@
               <div class="mt-4">
                 <button id="next-btn" class="btn btn-primary">Next Question</button>
               </div>
+
+              <!-- Dispute container for AI-evaluated questions -->
+              <div id="result-dispute-container" style="display: none;"></div>
             </div>
           </div>
         </div>
@@ -378,7 +381,7 @@
 
       <!-- History Tab -->
       <div class="tab-pane fade" id="history" role="tabpanel">
-        <!-- Sub-tabs for Q&A and Interviews -->
+        <!-- Sub-tabs for Q&A, Interviews, and Disputes -->
         <ul class="nav nav-pills mb-4" id="historySubTabs" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="qa-history-tab" data-bs-toggle="pill" data-bs-target="#qa-history" type="button" role="tab">
@@ -388,6 +391,11 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="interview-history-tab" data-bs-toggle="pill" data-bs-target="#interview-history" type="button" role="tab">
               Interviews
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="disputes-tab" data-bs-toggle="pill" data-bs-target="#disputes-history" type="button" role="tab">
+              Disputes <span id="disputes-badge" class="badge bg-warning text-dark ms-1" style="display: none;">0</span>
             </button>
           </li>
         </ul>
@@ -509,6 +517,35 @@
               </div>
               <div class="card-body" id="past-interviews">
                 <p class="text-muted text-center py-3">No past interviews</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disputes Sub-tab -->
+          <div class="tab-pane fade" id="disputes-history" role="tabpanel">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Your Disputed Questions</h5>
+              </div>
+              <div class="card-body">
+                <p class="text-muted small mb-3">
+                  Disputes allow you to challenge AI evaluations for Concept, Comparison, and Fill-in-the-Blank questions.
+                  An admin will review your dispute and may re-evaluate your answer.
+                </p>
+
+                <!-- Dispute Filter -->
+                <div class="mb-3">
+                  <select id="dispute-filter" class="form-select form-select-sm" style="width: auto;">
+                    <option value="">All Disputes</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="disapproved">Disapproved</option>
+                  </select>
+                </div>
+
+                <div id="disputes-list">
+                  <p class="text-muted text-center py-3">Loading disputes...</p>
+                </div>
               </div>
             </div>
           </div>
