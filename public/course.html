@@ -613,20 +613,20 @@
             <div class="mb-3">
               <label class="form-label"><strong>Topic Selection</strong></label>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="interview-topic-mode" id="topic-random" value="random" checked>
+                <input class="form-check-input" type="radio" name="interview-topic-mode" id="topic-random" value="random">
                 <label class="form-check-label" for="topic-random">
                   Let AI choose topics randomly
                 </label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="interview-topic-mode" id="topic-select-mode" value="select">
+                <input class="form-check-input" type="radio" name="interview-topic-mode" id="topic-select-mode" value="select" checked>
                 <label class="form-check-label" for="topic-select-mode">
                   Choose specific topics
                 </label>
               </div>
             </div>
 
-            <div id="topic-checkboxes" class="mb-3" style="display: none;">
+            <div id="topic-checkboxes" class="mb-3">
               <label class="form-label">Select Topics:</label>
               <div id="interview-topics-list" class="row g-2">
                 <!-- Topics loaded dynamically -->
