@@ -85,8 +85,34 @@
 
       <!-- Course Performance Tab -->
       <div class="tab-pane fade" id="performance-panel" role="tabpanel">
-        <div id="course-performance-container">
-          <p class="text-center py-4">Loading course performance...</p>
+        <!-- Sub-tabs for Practice vs Interview analytics -->
+        <ul class="nav nav-pills mb-4" id="analytics-subtabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="practice-subtab" data-bs-toggle="pill" data-bs-target="#practice-panel" type="button" role="tab">
+              Practice Performance
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="interview-subtab" data-bs-toggle="pill" data-bs-target="#interview-panel" type="button" role="tab">
+              Interview Performance
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Practice Performance Sub-panel -->
+          <div class="tab-pane fade show active" id="practice-panel" role="tabpanel">
+            <div id="course-performance-container">
+              <p class="text-center py-4">Loading course performance...</p>
+            </div>
+          </div>
+
+          <!-- Interview Performance Sub-panel -->
+          <div class="tab-pane fade" id="interview-panel" role="tabpanel">
+            <div id="interview-performance-container">
+              <p class="text-center py-4">Loading interview performance...</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -917,6 +943,233 @@ APP_URL=http://localhost:3000</code></pre>
         </div>
 
         ${learner.lastActivity ? `<p class="text-muted small mt-3 mb-0">Last activity: ${new Date(learner.lastActivity).toLocaleString()}</p>` : ''}
+      `;
+
+      new bootstrap.Modal(document.getElementById('viewPerformanceModal')).show();
+    }
+
+    // Store interview performance data
+    let interviewPerformanceData = [];
+
+    async function loadInterviewPerformance() {
+      const container = document.getElementById('interview-performance-container');
+      try {
+        const res = await fetch('/api/admin/course-interview-performance');
+        if (!res.ok) throw new Error('Failed to load interview performance');
+        const courses = await res.json();
+        interviewPerformanceData = courses;
+
+        if (courses.length === 0) {
+          container.innerHTML = `
+            <div class="alert alert-info">
+              No interview activity yet. Interview performance data will appear here once learners complete interviews.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = courses.map((course, courseIndex) => {
+          const s = course.summary;
+
+          return `
+          <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">${escapeHtml(course.courseName)}</h5>
+              <span class="badge bg-light text-success">${s.activeLearners} Learner${s.activeLearners !== 1 ? 's' : ''}</span>
+            </div>
+            <div class="card-body">
+              <!-- Course Interview Summary -->
+              <div class="row g-3 mb-4">
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0">${s.totalInterviews}</h4>
+                      <small class="text-muted">Total Interviews</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0 text-success">${s.completedInterviews}</h4>
+                      <small class="text-muted">Completed</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0">${s.totalQuestions}</h4>
+                      <small class="text-muted">Questions Asked</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0 text-warning">${s.totalSkipped}</h4>
+                      <small class="text-muted">Skipped</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0">${s.avgQuestionsPerInterview}</h4>
+                      <small class="text-muted">Avg Q/Interview</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="card bg-light text-center">
+                    <div class="card-body py-3">
+                      <h4 class="mb-0">${s.avgDurationMinutes}m</h4>
+                      <small class="text-muted">Avg Duration</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Learners Interview Table -->
+              <h6 class="mb-3">Learner Interview Performance</h6>
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Learner</th>
+                      <th class="text-center">Interviews</th>
+                      <th class="text-center">Questions</th>
+                      <th class="text-center">Skipped</th>
+                      <th class="text-center">Avg Duration</th>
+                      <th>Last Interview</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${course.learners.map((learner, learnerIndex) => `
+                      <tr>
+                        <td>
+                          <div>${escapeHtml(learner.name)}</div>
+                          <small class="text-muted">${escapeHtml(learner.email)}</small>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-primary">${learner.totalInterviews}</span>
+                          <small class="text-muted d-block">${learner.completedInterviews} completed</small>
+                        </td>
+                        <td class="text-center">${learner.totalQuestions}</td>
+                        <td class="text-center">
+                          <span class="${learner.totalSkipped > 0 ? 'text-warning' : 'text-muted'}">${learner.totalSkipped}</span>
+                        </td>
+                        <td class="text-center">${learner.avgDurationMinutes}m</td>
+                        <td>${learner.lastInterview ? new Date(learner.lastInterview).toLocaleString() : 'N/A'}</td>
+                        <td>
+                          <button class="btn btn-outline-info btn-sm" onclick="viewLearnerInterviews(${courseIndex}, ${learnerIndex})">
+                            View Sessions
+                          </button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `}).join('');
+      } catch (error) {
+        console.error('Error loading interview performance:', error);
+        container.innerHTML = '<div class="alert alert-danger">Failed to load interview performance</div>';
+      }
+    }
+
+    function viewLearnerInterviews(courseIndex, learnerIndex) {
+      const course = interviewPerformanceData[courseIndex];
+      const learner = course.learners[learnerIndex];
+
+      const content = document.getElementById('performance-content');
+      content.innerHTML = `
+        <div class="mb-3">
+          <h5>${escapeHtml(learner.name)} - Interview Sessions</h5>
+          <p class="text-muted mb-0">${escapeHtml(learner.email)}</p>
+          <p class="text-muted small">Course: ${escapeHtml(course.courseName)}</p>
+        </div>
+
+        <div class="row g-3 mb-4 text-center">
+          <div class="col-3">
+            <div class="p-3 bg-light rounded">
+              <h3 class="mb-0">${learner.totalInterviews}</h3>
+              <small class="text-muted">Total Sessions</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="p-3 bg-light rounded">
+              <h3 class="mb-0 text-success">${learner.completedInterviews}</h3>
+              <small class="text-muted">Completed</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="p-3 bg-light rounded">
+              <h3 class="mb-0">${learner.totalQuestions}</h3>
+              <small class="text-muted">Questions</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="p-3 bg-light rounded">
+              <h3 class="mb-0">${learner.avgDurationMinutes}m</h3>
+              <small class="text-muted">Avg Duration</small>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="mb-3">Interview Sessions</h6>
+        <div class="accordion" id="interviewAccordion">
+          ${learner.interviews.map((interview, idx) => {
+            const dateStr = new Date(interview.startTime).toLocaleString();
+            const hasEnded = !!interview.endTime;
+            const statusBadge = hasEnded ? '<span class="badge bg-success me-2">Completed</span>' : '<span class="badge bg-warning me-2">In Progress</span>';
+
+            return `
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#interview-${idx}">
+                    ${statusBadge}
+                    <span class="badge bg-secondary me-2">${interview.persona}</span>
+                    <span class="badge bg-info me-2">${interview.role}</span>
+                    <span class="me-2">${interview.questionCount} questions</span>
+                    ${interview.duration ? `<span class="text-muted me-2">(${interview.duration})</span>` : ''}
+                    <small class="text-muted ms-auto me-3">${dateStr}</small>
+                  </button>
+                </h2>
+                <div id="interview-${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#interviewAccordion">
+                  <div class="accordion-body">
+                    <div class="row g-3 mb-3">
+                      <div class="col-md-4">
+                        <strong>Interviewer:</strong> ${escapeHtml(interview.persona)}
+                      </div>
+                      <div class="col-md-4">
+                        <strong>Role:</strong> ${escapeHtml(interview.role)}
+                      </div>
+                      <div class="col-md-4">
+                        <strong>Questions:</strong> ${interview.questionCount} (${interview.skippedCount} skipped)
+                      </div>
+                    </div>
+                    ${interview.overallRating ? `
+                      <div class="mb-3">
+                        <strong>Overall Rating:</strong>
+                        <span class="badge ${interview.overallRating >= 4 ? 'bg-success' : interview.overallRating >= 3 ? 'bg-info' : interview.overallRating >= 2 ? 'bg-warning' : 'bg-danger'}">${interview.overallRating}/5</span>
+                      </div>
+                    ` : ''}
+                    ${interview.assessment ? `
+                      <div class="alert alert-info">
+                        <strong>Assessment:</strong><br>
+                        ${escapeHtml(interview.assessment)}
+                      </div>
+                    ` : '<p class="text-muted">No assessment available for this session.</p>'}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
       `;
 
       new bootstrap.Modal(document.getElementById('viewPerformanceModal')).show();
@@ -2048,6 +2301,9 @@ APP_URL=http://localhost:3000</code></pre>
       document.getElementById('disputes-tab').addEventListener('shown.bs.tab', loadAdminDisputes);
       document.getElementById('cache-tab').addEventListener('shown.bs.tab', loadCache);
       document.getElementById('admin-dispute-filter').addEventListener('change', loadAdminDisputes);
+
+      // Interview performance sub-tab
+      document.getElementById('interview-subtab').addEventListener('shown.bs.tab', loadInterviewPerformance);
 
       // Cache filters
       document.getElementById('cache-filter-course').addEventListener('change', applyCacheFilters);

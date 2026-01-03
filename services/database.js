@@ -590,6 +590,39 @@ function getInterviews(userId, courseId = null, limit = 20) {
   });
 }
 
+// Get all interviews for a course (for admin analytics)
+function getAllInterviewsForCourse(courseId = null) {
+  return new Promise((resolve, reject) => {
+    let query = `
+      SELECT ui.*, u.name as user_name, u.email as user_email
+      FROM user_interviews ui
+      JOIN users u ON ui.user_id = u.id
+      WHERE u.role = 'learner'
+    `;
+    const params = [];
+
+    if (courseId) {
+      query += ' AND ui.course_id = ?';
+      params.push(courseId);
+    }
+
+    query += ' ORDER BY ui.start_time DESC';
+
+    db.all(query, params, (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        const parsed = rows.map(row => ({
+          ...row,
+          session_data: JSON.parse(row.session_data),
+          summary: row.summary ? JSON.parse(row.summary) : null
+        }));
+        resolve(parsed);
+      }
+    });
+  });
+}
+
 // Settings operations
 function getSetting(key) {
   return new Promise((resolve, reject) => {
@@ -1206,6 +1239,7 @@ module.exports = {
   saveInterview,
   updateInterview,
   getInterviews,
+  getAllInterviewsForCourse,
   // Settings operations
   getSetting,
   setSetting,

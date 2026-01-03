@@ -11,6 +11,7 @@ const {
   getPerformanceByCourse,
   getHistory,
   getInterviews,
+  getAllInterviewsForCourse,
   getSetting,
   setSetting,
   getAllSettings,
@@ -339,6 +340,110 @@ router.get('/course-performance', async (req, res) => {
   } catch (error) {
     console.error('Error fetching course performance:', error);
     res.status(500).json({ error: 'Failed to fetch course performance' });
+  }
+});
+
+// GET /api/admin/course-interview-performance - Get all learners' interview performance by course
+router.get('/course-interview-performance', async (req, res) => {
+  try {
+    const { getCourses } = require('../services/storage');
+    const coursesData = await getCourses();
+    const allInterviews = await getAllInterviewsForCourse();
+
+    const result = [];
+
+    for (const course of coursesData.courses) {
+      const courseInterviews = allInterviews.filter(i => i.course_id === course.id);
+
+      if (courseInterviews.length === 0) continue;
+
+      // Group interviews by learner
+      const learnerMap = {};
+      courseInterviews.forEach(interview => {
+        if (!learnerMap[interview.user_id]) {
+          learnerMap[interview.user_id] = {
+            id: interview.user_id,
+            name: interview.user_name,
+            email: interview.user_email,
+            interviews: [],
+            totalInterviews: 0,
+            totalQuestions: 0,
+            totalSkipped: 0,
+            totalDuration: 0,
+            completedInterviews: 0
+          };
+        }
+
+        const learner = learnerMap[interview.user_id];
+        const summary = interview.summary || {};
+        const metrics = summary.metrics || {};
+
+        learner.interviews.push({
+          id: interview.id,
+          sessionId: interview.session_id,
+          startTime: interview.start_time,
+          endTime: interview.end_time,
+          questionCount: metrics.questionCount || 0,
+          skippedCount: metrics.skippedCount || 0,
+          duration: metrics.duration || null,
+          persona: interview.session_data?.persona?.name || 'Unknown',
+          role: interview.session_data?.targetRole?.title || 'Unknown',
+          assessment: summary.assessment || null,
+          overallRating: summary.overallRating || null
+        });
+
+        learner.totalInterviews++;
+        learner.totalQuestions += metrics.questionCount || 0;
+        learner.totalSkipped += metrics.skippedCount || 0;
+
+        if (interview.end_time) {
+          learner.completedInterviews++;
+          // Calculate duration in minutes
+          const start = new Date(interview.start_time);
+          const end = new Date(interview.end_time);
+          const durationMs = end - start;
+          learner.totalDuration += Math.round(durationMs / 60000);
+        }
+      });
+
+      // Convert learner map to array and calculate averages
+      const learners = Object.values(learnerMap).map(learner => ({
+        ...learner,
+        avgQuestionsPerInterview: learner.totalInterviews > 0 ? Math.round(learner.totalQuestions / learner.totalInterviews) : 0,
+        avgDurationMinutes: learner.completedInterviews > 0 ? Math.round(learner.totalDuration / learner.completedInterviews) : 0,
+        lastInterview: learner.interviews[0]?.startTime || null
+      }));
+
+      // Sort by most recent interview
+      learners.sort((a, b) => new Date(b.lastInterview) - new Date(a.lastInterview));
+
+      // Calculate course-level summary
+      const totalInterviews = courseInterviews.length;
+      const completedInterviews = courseInterviews.filter(i => i.end_time).length;
+      const totalQuestions = learners.reduce((sum, l) => sum + l.totalQuestions, 0);
+      const totalSkipped = learners.reduce((sum, l) => sum + l.totalSkipped, 0);
+      const totalDuration = learners.reduce((sum, l) => sum + l.totalDuration, 0);
+
+      result.push({
+        courseId: course.id,
+        courseName: course.name,
+        learners,
+        summary: {
+          totalInterviews,
+          completedInterviews,
+          activeLearners: learners.length,
+          totalQuestions,
+          totalSkipped,
+          avgQuestionsPerInterview: totalInterviews > 0 ? Math.round(totalQuestions / totalInterviews) : 0,
+          avgDurationMinutes: completedInterviews > 0 ? Math.round(totalDuration / completedInterviews) : 0
+        }
+      });
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching course interview performance:', error);
+    res.status(500).json({ error: 'Failed to fetch course interview performance' });
   }
 });
 
